@@ -842,7 +842,4 @@ int main(int argv, char** args){
     unloadAudio();
     cleanup();
 	return 0;
-    // Adding aboba
-    // Editing aboba
-    // Final aboba
 }

@@ -1,5 +1,9 @@
 .vscode/
-build/
-extra-DLLs/
+build/.cmake
+build/CMakeFiles
+build/cmake_install.cmake
+build/CMakeCache.txt
+build/compile_commands.json
+build/Makefile
 i686-w64-mingw32/
 x86_64-w64-mingw32/

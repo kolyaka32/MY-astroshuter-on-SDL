@@ -17,7 +17,7 @@
 #define MOVING_TIME 50
 #define POWERUP_TIME 5000
 #define SHOOT_TIME 250
-#define AsteroidsNumber 10
+#define AsteroidsNumber 16
 
 #define meteorCount 6
 #define regularExplosionCount 9
@@ -53,6 +53,7 @@ enum IMG_names{
     IMG_sonic_explosion5,
     IMG_sonic_explosion6,
     IMG_sonic_explosion7,
+    IMG_esc_button,
     IMG_slider_line,
     IMG_slider_button,
     IMG_flag_USA,
@@ -89,6 +90,7 @@ std::string IMG_files[IMG_count]{
     "img/sonicExplosion05.png",
     "img/sonicExplosion06.png",
     "img/sonicExplosion07.png",
+    "img/esc_button.png",
     "img/slider_line.png",
     "img/slider_button.png",
     "img/Flag_USA.png",
@@ -723,8 +725,9 @@ int main(int argv, char** args){
 
     loadInitFile();  // Load initialasing file file with settings
 
-    // Initialasing dinamic 
+    // Initialasing dinamic structures
     dinamicText ScoreText(18, SCREEN_WIDTH/2, 10);
+    Button esc(SCREEN_WIDTH - 24, 24, IMG_esc_button);
 
     // Initialasing all objects at screen
     player.init();
@@ -808,6 +811,14 @@ int main(int argv, char** args){
                 }
                 if (event.key.keysym.sym == SDLK_SPACE){
                     Shooting = false;
+                }
+            }
+            if (event.type == SDL_MOUSEBUTTONDOWN){
+                // Getting mouse position
+                int MouseX, MouseY;
+                SDL_GetMouseState(&MouseX, &MouseY);
+                if(esc.in(MouseX, MouseY)){  // Clicking on escape button
+                    pause();
                 }
             }
         }
@@ -910,9 +921,10 @@ int main(int argv, char** args){
         }
         ScoreText.draw(std::to_string(score), {255, 255, 255});  // Drawing score at screen
         for(int i=0; i<lives; ++i){
-            SDL_Rect dest = { SCREEN_WIDTH-100+30*i, 5, 24, 18};
+            SDL_Rect dest = { SCREEN_WIDTH-160+40*i, 5, 36, 27};
 	        SDL_RenderCopy(app.renderer, Textures[IMG_player], NULL, &dest); 
         }
+        esc.blit();  // Drawing escape button on screen
         SDL_RenderPresent(app.renderer);  // Blitting textures on screen
 		SDL_Delay(1000 / FPS);  // Delaying time to decrease CPU loading
 	}

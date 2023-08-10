@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <fstream>
 
 #include "SDL.h"
 #include "SDL_image.h"
@@ -119,6 +120,7 @@ bool Shooting = false;
 int shield = 100;
 int lives = 3;
 int BoostTime = 0;
+unsigned char language = 0;  // Language settings
 unsigned char MusicVolume = MIX_MAX_VOLUME/2;
 unsigned char EffectsVolume = MIX_MAX_VOLUME/2;
 
@@ -607,6 +609,7 @@ void pause(){
             TXT_Music.set("Music", 22, {255, 255, 255}, SCREEN_WIDTH/2, 250);
             TXT_Sound.set("Sounds", 22, {255, 255, 255}, SCREEN_WIDTH/2, 400);
             SDL_SetWindowTitle(app.window, "Astroshuter on SDL");
+            language = 2;
             break;
         case 4:
             TXT_SHMUP.set("ШМАП!", 64, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT/4);
@@ -616,6 +619,7 @@ void pause(){
             TXT_Music.set("Музыка", 22, {255, 255, 255}, SCREEN_WIDTH/2, 250);
             TXT_Sound.set("Звук", 22, {255, 255, 255}, SCREEN_WIDTH/2, 400);
             SDL_SetWindowTitle(app.window, "Астрошутер на SDL");
+            language = 1;
             break;
         default:
             break;
@@ -630,20 +634,95 @@ void pause(){
     }
 }
 
+// Loading initialasing settings in game
+void loadInitFile(){
+    // Reading file
+    std::ifstream in("settings.ini"); // Open file to read
+    std::string line;  // Output string line
+
+    MusicVolume = MIX_MAX_VOLUME/2;
+    EffectsVolume = MIX_MAX_VOLUME/2;
+
+    while(std::getline(in, line)){  // Reading file until it end
+        std::string first = line.substr(0, line.find(' '));
+        // Switching between options
+        if( first == "language" ){
+            std::string lang = line.substr(line.rfind(' ')+1);
+            if(lang == "russian"){
+                language = 1;
+            }
+            else if(lang == "english"){
+                language = 2;
+            }
+        }
+        else if( first == "music" ){
+            MusicVolume = std::stoi( line.substr(line.rfind(' ')+1) );
+        }
+         else if( first == "effects" ){
+            EffectsVolume = std::stoi( line.substr(line.rfind(' ')+1) );
+        }
+    }
+    // Initialasing constant start text 
+    switch (language)  // Setting up language
+    {
+    case 0:  // English language
+    case 2:
+        TXT_SHMUP.set("SHMUP!", 64, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT/4);
+        TXT_KEYS.set("Arrow keys move, Space to fire", 22, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+        TXT_START.set("Press any key to begin", 18, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT*3/4);
+        TXT_Pause.set("Game on pause", 30, {255, 255, 255}, SCREEN_WIDTH/2, 20);
+        TXT_Music.set("Music", 22, {255, 255, 255}, SCREEN_WIDTH/2, 250);
+        TXT_Sound.set("Sounds", 22, {255, 255, 255}, SCREEN_WIDTH/2, 400);
+        SDL_SetWindowTitle(app.window, "Astroshuter on SDL");
+        break;
+    case 1:  // Russian language
+        TXT_SHMUP.set("ШМАП!", 64, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT/4);
+        TXT_KEYS.set("Стрелки для движения, пробел для стрельбы", 22, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+        TXT_START.set("Нажмите любую кнопку для продолжения", 18, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT*3/4);
+        TXT_Pause.set("Игра на паузе", 30, {255, 255, 255}, SCREEN_WIDTH/2, 20);
+        TXT_Music.set("Музыка", 22, {255, 255, 255}, SCREEN_WIDTH/2, 250);
+        TXT_Sound.set("Звук", 22, {255, 255, 255}, SCREEN_WIDTH/2, 400);
+        SDL_SetWindowTitle(app.window, "Астрошутер на SDL");
+        break;
+    default:
+        break;
+    }
+    Mix_VolumeMusic(MusicVolume);  // Setting volume of music
+    Mix_Volume(-1, EffectsVolume);  // Setting volume of effects
+
+    in.close();  // Closing reading file
+}
+
+// Saving initialasing file
+void saveInitFile(){
+    std::ofstream setting("settings.ini");  // Creating output file
+
+    // Writing data to output
+    switch (language)  // Writing language
+    {
+    case 1:
+        setting << "language = russian" << std::endl;
+        break;
+    case 0:
+    case 2:
+    default:
+        setting << "language = english" << std::endl;
+        break;
+    }
+    setting << "music = " << std::to_string(MusicVolume) << std::endl;  // Writing music volume
+    setting << "effects = " << std::to_string(EffectsVolume) << std::endl;  // Writing effects volume
+
+    setting.close();  // Closing file
+}
+
 // Main function
 int main(int argv, char** args){
     initSDL();  // Initialasing of main SDL library
     loadTextures();  // Loading sprites to the game
     loadAudio();  // Loading music and sounds to the game
 
-    // Initialasing constant start text 
-    TXT_SHMUP.set("SHMUP!", 64, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT/4);
-    TXT_KEYS.set("Arrow keys move, Space to fire", 22, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-    TXT_START.set("Press any key to begin", 18, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT*3/4);
-    TXT_Pause.set("Game on pause", 30, {255, 255, 255}, SCREEN_WIDTH/2, 20);
-    TXT_Music.set("Music", 22, {255, 255, 255}, SCREEN_WIDTH/2, 250);
-    TXT_Sound.set("Sounds", 22, {255, 255, 255}, SCREEN_WIDTH/2, 400);
-    
+    loadInitFile();  // Load initialasing file file with settings
+
     // Initialasing dinamic 
     dinamicText ScoreText(18, SCREEN_WIDTH/2, 10);
 
@@ -837,6 +916,8 @@ int main(int argv, char** args){
         SDL_RenderPresent(app.renderer);  // Blitting textures on screen
 		SDL_Delay(1000 / FPS);  // Delaying time to decrease CPU loading
 	}
+    saveInitFile();  // Saving all data to setting file
+
     // Cleaning all data
     unloadTextures();
     unloadAudio();

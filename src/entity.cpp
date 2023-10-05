@@ -23,6 +23,12 @@ void Head::init(){
 void Head::blit(){
     SDL_RenderCopy(app.renderer, texture, NULL, &dest); 
 };
+void Head::blitLives(){
+    for(int i=0; i<player.lives; ++i){
+            SDL_Rect dest = { SCREEN_WIDTH-160+40*i, 5, 36, 27};
+	        SDL_RenderCopy(app.renderer, Textures[IMG_player], NULL, &dest); 
+        }
+}
 void Head::reset(){
     texture = Textures[IMG_player];
     SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
@@ -32,7 +38,7 @@ void Head::reset(){
     dest.y = SCREEN_HEIGHT - 80;
     frame = 0;
     oldShootTime = SDL_GetTicks();
-    lives = MAX_LIVES; shield = 100;
+    lives = MAX_LIVES; shield = MAX_SHIELD;
     BoostTime = -POWERUP_TIME;
 };
 void Head::update(){
@@ -47,7 +53,7 @@ void Head::update(){
         }
         if(frame/5 == IMG_sonic_explosion7){
             frame = 0;
-            shield = 100;
+            shield = MAX_SHIELD;
             lives -= 1;
             if(lives <= 0){
                 game_over = true;
@@ -173,8 +179,8 @@ void Pow::activate(){
         break;
     case POW_shield:
         player.shield += rand() % 20 + 10;
-        if(player.shield >= 100){
-            player.shield = 100;
+        if(player.shield >= MAX_SHIELD){
+            player.shield = MAX_SHIELD;
         }
         Mix_PlayChannel(-1, Sounds[SND_shield], 0);
         break;

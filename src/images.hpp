@@ -1,9 +1,7 @@
 #pragma once
 
 #include "include.hpp"
-
-
-#define METEOR_COUNT 7 // Number of different images of meteors
+#include "define.hpp"
 
 // Names of images in array to using
 enum IMG_names{
@@ -26,8 +24,10 @@ enum IMG_names{
     IMG_meteor2,
     IMG_meteor3,
     IMG_meteor4,
+    #if MEME_MOD
+        IMG_meteorSpecial,
+    #endif
     IMG_meteor5,
-    IMG_meteorSpecial,
 
     // Powerups
     IMG_bolt,
@@ -57,6 +57,13 @@ enum IMG_names{
     // Final counter 
     IMG_count
 };
+
+//const unsigned char METEOR_COUNT = IMG_meteor5-IMG_meteor0; // Number of different images of meteors
+#if MEME_MOD
+    #define METEOR_COUNT 7
+#else
+    #define METEOR_COUNT 6
+#endif
 
 // Load all textures
 bool loadAllTextures();

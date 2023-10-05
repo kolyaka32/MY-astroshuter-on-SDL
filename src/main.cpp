@@ -14,7 +14,7 @@
 App app;  // Creating main varables
 
 // Global numbers
-int score;
+unsigned int score;
 int oldShootTime;
 int oldMoveTime;
 int BoostTime;
@@ -27,8 +27,8 @@ unsigned char EffectsVolume;
 bool running = true;
 bool game_over = true;
 
-const SDL_Rect ShieldRectBack = {5, 5, 100, 10};  // Back part of health bar
-SDL_Rect ShieldRectFront = {5, 5, 100, 10};  // Front part of health bar
+const SDL_Rect ShieldRectBack = {5, 5, MAX_SHIELD, 10};  // Back part of health bar
+SDL_Rect ShieldRectFront = {5, 5, MAX_SHIELD, 10};  // Front part of health bar
 
 const SDL_Rect BoostRectBack = {5, 20, 100, 10};  // Back part of boost bar
 SDL_Rect BoostRectFront = {5, 20, 100, 10};  // Front part of boost bar
@@ -59,11 +59,11 @@ int main(int argv, char** args){
     loadAllAudio();  // Loading music and sounds to the game
     loadInitFile();  // Load initialasing file file with settings
 
-    // Interface
+    // Interface init
     dinamicText ScoreText(18, SCREEN_WIDTH/2, 10);
     Button esc(SCREEN_WIDTH - 24, 24, IMG_esc_button);
 
-    // Initialasing all objects at screen
+    // initializing all objects at screen
     player.init();
     MobArray.resize(START_NUM_ASTEROID);
     for(int i=0; i< MobArray.size(); ++i){
@@ -215,12 +215,15 @@ int main(int argv, char** args){
                 // Collisons of ship and asteroids
                 for(int i=0; i<MobArray.size(); ++i){
                     if(MobArray[i].isAnimation() && SDL_HasIntersection(&player.dest, &MobArray[i].dest)){
-                        player.shield -= MobArray[i].dest.w / 2;
+                        if(player.shield <= MobArray[i].dest.w / 2){
+                            player.setAnimation();  // Playing animation of explosion ship
+                            player.shield = 100;
+                        }
+                        else{
+                            player.shield -= MobArray[i].dest.w / 2;
+                        }
                         Mix_PlayChannel(-1, Sounds[SND_sonicExplosion], 0);  // Playing sound of explosion of ship
                         MobArray[i].setAnimation();  // Playing animation of explosion meteor
-                        if(player.shield <= 0){
-                            player.setAnimation();  // Playing animation of explosion ship
-                        }
                     }
                 }
                 // Collision of ship and power ups
@@ -260,21 +263,21 @@ int main(int argv, char** args){
             SDL_SetRenderDrawColor(app.renderer, 0, 0, 255, 255);
             SDL_RenderFillRect(app.renderer, &BoostRectFront);  // Blue bar 
         }
-        ScoreText.draw(std::to_string(score), {255, 255, 255});  // Drawing score at screen
-        for(int i=0; i<player.lives; ++i){
-            SDL_Rect dest = { SCREEN_WIDTH-160+40*i, 5, 36, 27};
-	        SDL_RenderCopy(app.renderer, Textures[IMG_player], NULL, &dest); 
-        }
+        ScoreText.draw(std::to_string(score), MIDLE_text);  // Drawing score at screen
+        player.blitLives();  // Drawing lives of player at screen
         esc.blit();  // Drawing escape button on screen
         SDL_RenderPresent(app.renderer);  // Blitting textures on screen
 
-        if(1000/FPS > (SDL_GetTicks() - oldTickTime)){  //
+        if( 1000/FPS > (SDL_GetTicks() - oldTickTime) ){  //
             SDL_Delay( 1000/FPS - (SDL_GetTicks() - oldTickTime) );  // Delaying constant time between ticks to decrease CPU loading
         }
         oldTickTime = SDL_GetTicks();  // Setting time of previous tick
 	}
     // Exiting program
     saveInitFile();  // Saving all data to setting file for next start
+
+    // Clearing dinamic structs
+    ScoreText.clear();
 
     // Cleaning all data
     unloadAllAudio();

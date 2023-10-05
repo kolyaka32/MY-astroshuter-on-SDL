@@ -6,6 +6,7 @@ build/CMakeCache.txt
 build/compile_commands.json
 build/Makefile
 build/Testing
+build/settings.ini
 
 # Old include libraries
 i686-w64-mingw32/
@@ -29,6 +30,7 @@ cmake/
 
 # Executables files
 *.exe
+*.o
 *.dll
 
 # Archives

@@ -4,6 +4,13 @@
 #include "define.hpp"
 #include "structs.hpp"
 
+// Text alignment type
+enum ALIGNMENT_types{
+    LEFT_text,
+    MIDLE_text,
+    RIGHT_text
+};
+
 // Static text on screen with drawing functions
 class staticText
 {
@@ -13,8 +20,8 @@ private:
     SDL_Texture *Texture;
     SDL_Rect Rect;
 public:
-    ~staticText();
-    void set(std::string text, int size, SDL_Color color, int x, int y);
+    void clear();
+    void set(std::string text, int size, ALIGNMENT_types alignment, int x, int y, SDL_Color color = {255, 255, 255});
     void draw();
 };
 
@@ -26,10 +33,11 @@ private:
     SDL_Surface *Surface;
     SDL_Texture *Texture;
     SDL_Rect Rect;
+    int X;
 public:
     dinamicText(int size, int x, int y);
-    ~dinamicText();
-    void draw(std::string text, SDL_Color color);
+    void clear();
+    void draw(std::string text, const ALIGNMENT_types alignment, SDL_Color color = {255, 255, 255});
 };
 
 class Slider{

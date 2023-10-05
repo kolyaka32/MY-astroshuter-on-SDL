@@ -5,21 +5,21 @@
 #include "pause.hpp"
 
 void setEnglishText(){
-    TXT_SHMUP.set("SHMUP!", 64, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT/4);
-    TXT_KEYS.set("Arrow keys move, Space to fire", 22, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-    TXT_START.set("Press any key to begin", 18, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT*3/4);
-    TXT_Pause.set("Game on pause", 30, {255, 255, 255}, SCREEN_WIDTH/2, 20);
-    TXT_Music.set("Music", 22, {255, 255, 255}, SCREEN_WIDTH/2, 250);
-    TXT_Sound.set("Sounds", 22, {255, 255, 255}, SCREEN_WIDTH/2, 400);
+    TXT_SHMUP.set("SHMUP!", 64, MIDLE_text, SCREEN_WIDTH/2, SCREEN_HEIGHT/4);
+    TXT_KEYS.set("Arrow keys move, Space to fire", 22, MIDLE_text, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+    TXT_START.set("Press any key to begin", 18, MIDLE_text, SCREEN_WIDTH/2, SCREEN_HEIGHT*3/4);
+    TXT_Pause.set("Game on pause", 30, MIDLE_text, SCREEN_WIDTH/2, 20);
+    TXT_Music.set("Music", 22, MIDLE_text, SCREEN_WIDTH/2, 250);
+    TXT_Sound.set("Sounds", 22, MIDLE_text, SCREEN_WIDTH/2, 400);
     SDL_SetWindowTitle(app.window, "Astroshuter on SDL");
 }
 void setRussianText(){
-    TXT_SHMUP.set("ШМАП!", 64, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT/4);
-    TXT_KEYS.set("Стрелки для движения, пробел для стрельбы", 22, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-    TXT_START.set("Нажмите любую кнопку для продолжения", 18, {255, 255, 255}, SCREEN_WIDTH/2, SCREEN_HEIGHT*3/4);
-    TXT_Pause.set("Игра на паузе", 30, {255, 255, 255}, SCREEN_WIDTH/2, 20);
-    TXT_Music.set("Музыка", 22, {255, 255, 255}, SCREEN_WIDTH/2, 250);
-    TXT_Sound.set("Звук", 22, {255, 255, 255}, SCREEN_WIDTH/2, 400);
+    TXT_SHMUP.set("ШМАП!", 64, MIDLE_text, SCREEN_WIDTH/2, SCREEN_HEIGHT/4);
+    TXT_KEYS.set("Стрелки для движения, пробел для стрельбы", 22, MIDLE_text, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+    TXT_START.set("Нажмите любую кнопку для продолжения", 18, MIDLE_text, SCREEN_WIDTH/2, SCREEN_HEIGHT*3/4);
+    TXT_Pause.set("Игра на паузе", 30, MIDLE_text, SCREEN_WIDTH/2, 20);
+    TXT_Music.set("Музыка", 22, MIDLE_text, SCREEN_WIDTH/2, 250);
+    TXT_Sound.set("Звук", 22, MIDLE_text, SCREEN_WIDTH/2, 400);
     SDL_SetWindowTitle(app.window, "Астрошутер на SDL");
 }
 

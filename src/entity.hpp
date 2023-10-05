@@ -12,9 +12,7 @@ protected:
     SDL_Texture *texture;
 public:
     SDL_Rect dest;
-
-    Entity(){};
-    ~Entity(){};
+    
     void init();
     void blit();
     void update();
@@ -22,29 +20,27 @@ public:
 
 class Head:public Entity
 {
-public:
     unsigned char frame;
+public:
     unsigned char shield;
     unsigned char lives;
-    //SDL_Rect dest;  // Rectangle for collisions
-    int speedx, speedy;  // Delta speed for movement
+
+    int speedx;//, speedy;  // Delta speed for movement
 
     void init();
-    void blit();
     void reset();
+    void blit();
+    void blitLives();
     void update();
+    void shoot();
     void setAnimation();
     bool isAnimation();
-    void shoot();
 };
 
 class Bullet:public Entity
 {
 public:
-    //SDL_Rect dest;  // Rectangle for collisions
-
     Bullet(int PosX, int PosY);
-    
     bool isOver();
 };
 
@@ -54,8 +50,6 @@ private:
     int rot; int dRot;
     unsigned char frame;
 public:
-    //SDL_Rect dest;  // Rectangle for collisions
-
     void init();
     void blit();
     void update();
@@ -71,8 +65,6 @@ class Pow:public Entity
 private:
     char type;
 public:
-    //SDL_Rect dest;  // Rectangle for collisions
-
     Pow(SDL_Rect position);
     void activate();
     bool isOver();

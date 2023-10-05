@@ -26,7 +26,10 @@ bool loadAllTextures(){
     loadTexture(IMG_meteor3, "img/meteorBrown_small1.png");
     loadTexture(IMG_meteor4, "img/meteorBrown_small2.png");
     loadTexture(IMG_meteor5, "img/meteorBrown_tiny1.png");
-    loadTexture(IMG_meteorSpecial, "img/raian-gosling-25.png");
+    
+    #if MEME_MOD  // Extra mem edition
+        loadTexture(IMG_meteorSpecial, "img/raian-gosling-25.png");
+    #endif
 
     // Powerups
     loadTexture(IMG_bolt, "img/bolt_gold.png");

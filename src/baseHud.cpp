@@ -9,38 +9,41 @@
 //App app;
 
 // Static text on screen with drawing functions
-staticText::~staticText(){
+void staticText::clear(){
     SDL_FreeSurface(Surface);
     SDL_DestroyTexture(Texture);
     TTF_CloseFont(Font);
 }
 
-void staticText::set(std::string text, int size, SDL_Color color, int x, int y){
-    Font = TTF_OpenFont("Arial.ttf", size);  // Reading font to drawing text
+// Creating texture for drawing statick text
+void staticText::set(std::string text, int size, ALIGNMENT_types alignment, int x, int y, SDL_Color color ){
+    Font = TTF_OpenFont(FONT_NAME, size);  // Reading font to drawing text
     Surface = TTF_RenderUTF8_Solid(Font, text.std::string::c_str(), color);
     Texture = SDL_CreateTextureFromSurface(app.renderer, Surface);
     SDL_QueryTexture(Texture, NULL, NULL, &Rect.w, &Rect.h);
-    Rect.x = x - Rect.w/2; Rect.y = y;
+    Rect.x = x - Rect.w * alignment/2; Rect.y = y;
 }
 
+// Drawing current statick text at screen
 void staticText::draw(){
     SDL_RenderCopy(app.renderer, Texture, NULL, &Rect);
 };
 
 // Class of drawing dinamic text at screen
-dinamicText::dinamicText(int size, int x, int y){
-    Font = TTF_OpenFont("Arial.ttf", size);  // Reading font to drawing text
-    Rect.x = x; Rect.y = y;
+dinamicText::dinamicText(const int size, int x, int y){
+    Font = TTF_OpenFont(FONT_NAME, size);  // Reading font to drawing text
+    X = x; Rect.y = y;
 }
-dinamicText::~dinamicText(){
+void dinamicText::clear(){
+    TTF_CloseFont(Font);
     SDL_FreeSurface(Surface);
     SDL_DestroyTexture(Texture);
-    TTF_CloseFont(Font);
 }
-void dinamicText::draw(std::string text, SDL_Color color){
+void dinamicText::draw(std::string text, const ALIGNMENT_types alignment, SDL_Color color){
     Surface = TTF_RenderText_Solid(Font, text.std::string::c_str(), color);
     Texture = SDL_CreateTextureFromSurface(app.renderer, Surface);
     SDL_QueryTexture(Texture, NULL, NULL, &Rect.w, &Rect.h);
+    Rect.x = X - Rect.w * alignment/2;
     SDL_RenderCopy(app.renderer, Texture, NULL, &Rect);
 };
 

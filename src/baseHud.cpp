@@ -5,9 +5,6 @@
 
 #include "baseHud.hpp"
 
-//SDL_Texture *Textures[IMG_count];  // Array of all textures
-//App app;
-
 // Static text on screen with drawing functions
 void staticText::clear(){
     SDL_FreeSurface(Surface);
@@ -82,4 +79,28 @@ void Button::blit(){
 bool Button::in(int x, int y){
     return ((x > dest.x && x < dest.x+dest.w) &&
         (y > dest.y && y < dest.y+dest.h));
-}
+};
+
+Animation::Animation( SDL_Rect destination, std::string name ){
+    // Creating animation
+    SDL_RWops* rwo = SDL_RWFromFile(name.std::string::c_str(), "r");
+    anim = IMG_LoadGIFAnimation_RW(rwo);
+    SDL_RWclose(rwo);
+
+    dest = destination;
+    frame = 0; 
+    prevTick = SDL_GetTicks();
+};
+void Animation::blit(){
+    texture = SDL_CreateTextureFromSurface(app.renderer, anim->frames[frame]);
+    SDL_RenderCopy(app.renderer, texture, NULL, &dest);
+    if(SDL_GetTicks() > prevTick + anim->delays[0]*2/3){
+        frame = (frame+1) % anim->count;
+        prevTick = SDL_GetTicks();
+    }
+};
+void Animation::clear(){
+    SDL_DestroyTexture(texture);
+    IMG_FreeAnimation(anim);
+};
+

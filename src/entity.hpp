@@ -12,8 +12,7 @@ protected:
     SDL_Texture *texture;
 public:
     SDL_Rect dest;
-    
-    void init();
+
     void blit();
     void update();
 };
@@ -24,10 +23,8 @@ class Head:public Entity
 public:
     unsigned char shield;
     unsigned char lives;
+    int speedx;  // Delta speed for movement
 
-    int speedx;//, speedy;  // Delta speed for movement
-
-    void init();
     void reset();
     void blit();
     void blitLives();

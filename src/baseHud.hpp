@@ -63,3 +63,17 @@ public:
     void blit();
     bool in(int x, int y);
 };
+
+class Animation
+{
+private:
+    IMG_Animation* anim;
+    SDL_Texture* texture;
+    unsigned int frame;
+    uint32_t prevTick;
+    SDL_Rect dest;
+public:
+    Animation( SDL_Rect destination, std::string name );
+    void blit();
+    void clear();
+};

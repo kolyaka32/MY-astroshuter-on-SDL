@@ -62,9 +62,12 @@ int main(int argv, char** args){
     // Interface init
     dinamicText ScoreText(18, SCREEN_WIDTH/2, 10);
     Button esc(SCREEN_WIDTH - 24, 24, IMG_esc_button);
+    #if ADVERTISMENT_MOD
+        Animation Advertisment({0, GAME_HEIGHT, SCREEN_WIDTH, ADV_HIGHT}, "img/ADV.gif");
+    #endif
 
     // initializing all objects at screen
-    player.init();
+    player.reset();
     MobArray.resize(START_NUM_ASTEROID);
     for(int i=0; i< MobArray.size(); ++i){
         MobArray[i].init();
@@ -106,6 +109,7 @@ int main(int argv, char** args){
             }
             // Resetting positions and speed of all objects
             player.reset();
+            player.lives = MAX_LIVES; player.shield = MAX_SHIELD;
             MobArray.resize( START_NUM_ASTEROID);
             for(int i=0; i< MobArray.size(); ++i){
                 MobArray[i].reset();
@@ -158,11 +162,11 @@ int main(int argv, char** args){
         }
 
         if(SDL_GetTicks() - oldMoveTime > MOVING_TIME){  // Updating all objects once per need time
+            // Moving all objects
             player.update();
-            if(Shooting){
+            if(Shooting && player.isAnimation()){
                 player.shoot();  // Player shooting
             }
-            // Moving all objects
             for(int i=0; i< MobArray.size(); ++i){
                 MobArray[i].update();
             }
@@ -266,6 +270,10 @@ int main(int argv, char** args){
         ScoreText.draw(std::to_string(score), MIDLE_text);  // Drawing score at screen
         player.blitLives();  // Drawing lives of player at screen
         esc.blit();  // Drawing escape button on screen
+        #if ADVERTISMENT_MOD
+            Advertisment.blit();  // Drawing advertisment at bottom
+        #endif
+        
         SDL_RenderPresent(app.renderer);  // Blitting textures on screen
 
         if( 1000/FPS > (SDL_GetTicks() - oldTickTime) ){  //
@@ -278,6 +286,15 @@ int main(int argv, char** args){
 
     // Clearing dinamic structs
     ScoreText.clear();
+    TXT_SHMUP.clear();
+    TXT_KEYS.clear();
+    TXT_START.clear();
+    TXT_Pause.clear();
+    TXT_Music.clear();
+    TXT_Sound.clear();
+    #if ADVERTISMENT_MOD
+        Advertisment.clear();
+    #endif
 
     // Cleaning all data
     unloadAllAudio();

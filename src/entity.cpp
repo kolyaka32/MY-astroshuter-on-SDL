@@ -16,15 +16,11 @@ void Entity::update(){
 };
 
 // Head class
-void Head::init(){
-    texture = Textures[IMG_player];
-    SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
-};
 void Head::blit(){
     SDL_RenderCopy(app.renderer, texture, NULL, &dest); 
 };
 void Head::blitLives(){
-    for(int i=0; i<player.lives; ++i){
+    for(int i=0; i < lives; ++i){
             SDL_Rect dest = { SCREEN_WIDTH-160+40*i, 5, 36, 27};
 	        SDL_RenderCopy(app.renderer, Textures[IMG_player], NULL, &dest); 
         }
@@ -35,10 +31,9 @@ void Head::reset(){
     dest.h /= 2; dest.w /= 2;
     speedx = 0; speedy = 0;
     dest.x = SCREEN_WIDTH/2 - dest.w/2;
-    dest.y = SCREEN_HEIGHT - 80;
+    dest.y = GAME_HEIGHT - 80;
     frame = 0;
     oldShootTime = SDL_GetTicks();
-    lives = MAX_LIVES; shield = MAX_SHIELD;
     BoostTime = -POWERUP_TIME;
 };
 void Head::update(){
@@ -51,14 +46,14 @@ void Head::update(){
             dest.w/=2; dest.h/=2;
             dest.x -= dest.h/2; dest.y -= dest.w/2;
         }
-        if(frame/5 == IMG_sonic_explosion7){
-            frame = 0;
+        if(frame/5 >= IMG_sonic_explosion7){
             shield = MAX_SHIELD;
             lives -= 1;
             if(lives <= 0){
                 game_over = true;
             }
             reset();
+
         }
     }
     else{
@@ -151,7 +146,7 @@ void Mob::setAnimation(){
     dest.w/=2; dest.h/=2;
 }
 bool Mob::isOver(){
-    return (dest.y - dest.h > SCREEN_HEIGHT) || (dest.x > SCREEN_WIDTH) || (dest.x+dest.w < 0);
+    return (dest.y - dest.h > GAME_HEIGHT) || (dest.x > SCREEN_WIDTH) || (dest.x+dest.w < 0);
 }
 bool Mob::isAnimation(){
     return (frame == 0);
@@ -189,5 +184,5 @@ void Pow::activate(){
     }
 }
 bool Pow::isOver(){
-    return dest.y > SCREEN_HEIGHT;
+    return dest.y > GAME_HEIGHT;
 }

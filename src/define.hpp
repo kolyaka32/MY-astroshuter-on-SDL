@@ -1,13 +1,18 @@
 #pragma once
 
+// Extra modifications for game
+#define MEME_MOD 0  // Activate meme include mode
+#define ADVERTISMENT_MOD 1  // Activate adv at bottom of screen
+#define ADV_HIGHT 70
+
 // System numbers
 #define WINDOWNAME "Astroshuter on SDL"
 #define SCREEN_WIDTH 480
-#define SCREEN_HEIGHT 600
+#define GAME_HEIGHT 600
+#define SCREEN_HEIGHT GAME_HEIGHT + ADV_HIGHT * ADVERTISMENT_MOD
 #define FPS 60
 
 #define FONT_NAME "Arial.ttf"  // Main use font for drawing
-#define MEME_MOD 0  // Activate meme include mode
 
 // Balance options
 #define MOVING_TIME 50

@@ -14,6 +14,7 @@ void loadInitFile(){
     language = 0;
     MusicVolume = MIX_MAX_VOLUME/2;
     EffectsVolume = MIX_MAX_VOLUME/2;
+    MaxScore = 0;
 
     while(std::getline(in, line)){  // Reading file until it end
         std::string first = line.substr(0, line.find(' '));
@@ -30,8 +31,11 @@ void loadInitFile(){
         else if( first == "music" ){
             MusicVolume = std::stoi( line.substr(line.rfind(' ')+1) );
         }
-         else if( first == "effects" ){
+        else if( first == "effects" ){
             EffectsVolume = std::stoi( line.substr(line.rfind(' ')+1) );
+        }
+        else if( first == "maxScore" ){
+            MaxScore = std::stoi( line.substr(line.rfind(' ')+1) );
         }
     }
     // Initialasing constant start text 
@@ -71,6 +75,7 @@ void saveInitFile(){
     }
     setting << "music = " << std::to_string(MusicVolume) << std::endl;  // Writing music volume
     setting << "effects = " << std::to_string(EffectsVolume) << std::endl;  // Writing effects volume
+    setting << "maxScore = " << std::to_string(MaxScore) << std::endl;  // Writing max getting score
 
     setting.close();  // Closing file
 }

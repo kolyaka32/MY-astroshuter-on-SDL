@@ -14,7 +14,6 @@
 App app;  // Creating main varables
 
 // Global numbers
-unsigned int score;
 int oldShootTime;
 int oldMoveTime;
 int BoostTime;
@@ -23,7 +22,9 @@ int oldTickTime;
 unsigned char language;
 unsigned char MusicVolume;
 unsigned char EffectsVolume;
-//
+unsigned int MaxScore;
+unsigned int score = 0;
+// Global running flags
 bool running = true;
 bool game_over = true;
 
@@ -45,6 +46,12 @@ staticText TXT_START;
 staticText TXT_Pause;
 staticText TXT_Music;
 staticText TXT_Sound;
+staticText MenuHighScore;
+staticText MenuMaxScore;
+
+#if ADVERTISMENT_MOD
+    Animation Advertisment({0, GAME_HEIGHT, SCREEN_WIDTH, ADV_HIGHT}, "img/ADV2.gif");
+#endif
 
 // Initialasing dinamic structures
 Head player;
@@ -63,7 +70,7 @@ int main(int argv, char** args){
     dinamicText ScoreText(18, SCREEN_WIDTH/2, 10);
     Button esc(SCREEN_WIDTH - 24, 24, IMG_esc_button);
     #if ADVERTISMENT_MOD
-        Animation Advertisment({0, GAME_HEIGHT, SCREEN_WIDTH, ADV_HIGHT}, "img/ADV.gif");
+        Animation MenuAdvertisment({96, SCREEN_HEIGHT-192, 288, 192}, "img/ADV1.gif");
     #endif
 
     // initializing all objects at screen
@@ -86,16 +93,22 @@ int main(int argv, char** args){
             // Clearing all unnecesary information
             BulletArray.clear();
             PowArray.clear();
-            // Showing extra text
-            SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
-            TXT_SHMUP.draw();
-            TXT_KEYS.draw();
-            TXT_START.draw();
-            SDL_RenderPresent(app.renderer);
+            if(MaxScore < score){  // Updating max score
+                MaxScore = score;
+            }
 
             // Starting loop for waiting for start
             bool waiting = true;
-            while(waiting){
+
+            while(waiting&&running){
+                if(language == 1){
+                    MenuHighScore.set("Ваш последний счёт: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
+                    MenuMaxScore.set("Ваш максимальный счёт: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
+                }
+                else{
+                    MenuHighScore.set("Your last score: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
+                    MenuMaxScore.set("Your max score: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
+                }
                 while( SDL_PollEvent(&event) != 0 ){
                     if(event.type == SDL_QUIT){
                         running = false;  // Exit from program
@@ -104,9 +117,34 @@ int main(int argv, char** args){
                     if (event.type == SDL_KEYDOWN) {
                         waiting = false;
                     }
+                    if (event.type == SDL_MOUSEBUTTONDOWN){
+                        // Getting mouse position
+                        int MouseX, MouseY;
+                        SDL_GetMouseState(&MouseX, &MouseY);
+                        if(esc.in(MouseX, MouseY)){  // Clicking on escape button
+                            pause();
+                        }
+                    }
                 }
+                // Drawing
+                SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
+                TXT_SHMUP.draw();
+                TXT_KEYS.draw();
+                TXT_START.draw();
+                if(score != 0){
+                    MenuHighScore.draw();
+                    MenuMaxScore.draw();
+                }
+
+                esc.blit();
+                #if ADVERTISMENT_MOD
+                    MenuAdvertisment.blit();
+                #endif
+                SDL_RenderPresent(app.renderer);
+
                 SDL_Delay(1000 / FPS);  // Delaying time to decrease CPU loading
             }
+            MenuHighScore.clear();  MenuMaxScore.clear();
             // Resetting positions and speed of all objects
             player.reset();
             player.lives = MAX_LIVES; player.shield = MAX_SHIELD;
@@ -294,6 +332,7 @@ int main(int argv, char** args){
     TXT_Sound.clear();
     #if ADVERTISMENT_MOD
         Advertisment.clear();
+        MenuAdvertisment.clear();
     #endif
 
     // Cleaning all data

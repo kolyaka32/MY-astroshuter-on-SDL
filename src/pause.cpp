@@ -5,21 +5,25 @@
 #include "pause.hpp"
 
 void setEnglishText(){
-    TXT_SHMUP.set("SHMUP!", 64, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT/4);
-    TXT_KEYS.set("Arrow keys move, Space to fire", 22, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT/2);
-    TXT_START.set("Press any key to begin", 18, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/4);
+    TXT_SHMUP.set("SHMUP!", 64, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT/5);
+    TXT_KEYS.set("Arrow keys move, Space to fire", 22, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*2/5);
+    TXT_START.set("Press any key to begin", 18, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*2/5+70);
     TXT_Pause.set("Game on pause", 30, MIDLE_text, SCREEN_WIDTH/2, 20);
     TXT_Music.set("Music", 22, MIDLE_text, SCREEN_WIDTH/2, 250);
     TXT_Sound.set("Sounds", 22, MIDLE_text, SCREEN_WIDTH/2, 400);
+    MenuHighScore.set("Your last score: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
+    MenuMaxScore.set("Your max score: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
     SDL_SetWindowTitle(app.window, "Astroshuter on SDL");
 }
 void setRussianText(){
-    TXT_SHMUP.set("ШМАП!", 64, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT/4);
-    TXT_KEYS.set("Стрелки для движения, пробел для стрельбы", 22, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT/2);
-    TXT_START.set("Нажмите любую кнопку для продолжения", 18, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/4);
+    TXT_SHMUP.set("ШМАП!", 64, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT/5);
+    TXT_KEYS.set("Стрелки для движения, пробел для стрельбы", 22, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*2/5);
+    TXT_START.set("Нажмите любую кнопку для продолжения", 18, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*2/5+70);
     TXT_Pause.set("Игра на паузе", 30, MIDLE_text, SCREEN_WIDTH/2, 20);
     TXT_Music.set("Музыка", 22, MIDLE_text, SCREEN_WIDTH/2, 250);
     TXT_Sound.set("Звук", 22, MIDLE_text, SCREEN_WIDTH/2, 400);
+    MenuHighScore.set("Ваш последний счёт: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
+    MenuMaxScore.set("Ваш максимальный счёт: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
     SDL_SetWindowTitle(app.window, "Астрошутер на SDL");
 }
 
@@ -98,8 +102,13 @@ void pause(){
         // Drawing
         SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
         TXT_Pause.draw();  TXT_Music.draw(); TXT_Sound.draw();  // Showing extra text
-        MusicSlider.blit(MusicVolume*2);  SoundSlider.blit(EffectsVolume*2);  // Drawing sliders
-        BtnFlagUSA.blit();  BtnFlagRUS.blit();  // Drawing buttons
+        MusicSlider.blit(MusicVolume*2);
+        SoundSlider.blit(EffectsVolume*2);  // Drawing sliders
+        BtnFlagUSA.blit();
+        BtnFlagRUS.blit();  // Drawing buttons
+        #if ADVERTISMENT_MOD
+            Advertisment.blit();  // Drawing advertisment at bottom
+        #endif
         SDL_RenderPresent(app.renderer);  // Blitting textures on screen
         SDL_Delay(1000 / FPS);  // Delaying time to decrease CPU loading
     }

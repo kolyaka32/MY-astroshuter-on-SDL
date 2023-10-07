@@ -76,9 +76,6 @@ int main(int argv, char** args){
     // initializing all objects at screen
     player.reset();
     MobArray.resize(START_NUM_ASTEROID);
-    for(int i=0; i< MobArray.size(); ++i){
-        MobArray[i].init();
-    }
 
     Mix_PlayMusic( Musics[MUS_main], -1 );  // Infinite playing music
 
@@ -90,6 +87,7 @@ int main(int argv, char** args){
 	{
         // Showing loading screen
         if(game_over){
+            Shooting = false;
             // Clearing all unnecesary information
             BulletArray.clear();
             PowArray.clear();
@@ -165,10 +163,10 @@ int main(int argv, char** args){
             if (event.type == SDL_KEYDOWN) {
                 // Resseting field and next new generation
                 if (event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_a){
-                    player.speedx = -8;
+                    player.moveLeft();
                 }
                 if (event.key.keysym.sym == SDLK_RIGHT || event.key.keysym.sym == SDLK_d){
-                    player.speedx = 8;
+                    player.moveRight();
                 }
                 if (event.key.keysym.sym == SDLK_SPACE){
                     Shooting = true;
@@ -183,7 +181,7 @@ int main(int argv, char** args){
             if (event.type == SDL_KEYUP) {
                 if (event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RIGHT 
                 || event.key.keysym.sym == SDLK_a || event.key.keysym.sym == SDLK_d) {
-                    player.speedx = 0;
+                    player.stop();
                 }
                 if (event.key.keysym.sym == SDLK_SPACE){
                     Shooting = false;
@@ -231,14 +229,14 @@ int main(int argv, char** args){
                 }
             }
             // Collsions of the objects
-            for(int i=0; i<BulletArray.size(); ++i){  // Getting collisons of bullets and asteroids
-                for(int j=0; j<MobArray.size(); ++j){  // year, n^2, not optimal
+            for(int i=0; i < BulletArray.size(); ++i){  // Getting collisons of bullets and asteroids
+                for(int j=0; j < MobArray.size(); ++j){  // year, n^2, not optimal
                     if((MobArray[j].isAnimation()) && 
                     (SDL_HasIntersection(&BulletArray[i].dest, &MobArray[j].dest))){
                         // Explosion of meteor
                         score += MobArray[j].dest.w;  // Increasing global score
-                        
-                        if( score/METEOR_ADD_SCORE + START_NUM_ASTEROID > MobArray.size() ){  // Adding meteor for increassing difficulty
+                        // Adding meteor for increassing difficulty
+                        if( (MobArray.size() < MAX_NUM_METEOR) && (score/METEOR_ADD_SCORE + START_NUM_ASTEROID > MobArray.size()) ){  
                             MobArray.push_back(Mob());
                             MobArray[MobArray.size()-1].reset();
                         }
@@ -252,12 +250,13 @@ int main(int argv, char** args){
                     }
                 }
             }
-            // Getting collsion os hip and other objects
+            // Getting collsion of ship and other objects
             if(player.isAnimation()){
                 // Collisons of ship and asteroids
                 for(int i=0; i<MobArray.size(); ++i){
                     if(MobArray[i].isAnimation() && SDL_HasIntersection(&player.dest, &MobArray[i].dest)){
                         if(player.shield <= MobArray[i].dest.w / 2){
+                            Shooting = false;
                             player.setAnimation();  // Playing animation of explosion ship
                             player.shield = 100;
                         }
@@ -268,7 +267,7 @@ int main(int argv, char** args){
                         MobArray[i].setAnimation();  // Playing animation of explosion meteor
                     }
                 }
-                // Collision of ship and power ups
+                // Collision of ship and power-ups
                 for(int i=0; i<PowArray.size(); ++i){
                     if(SDL_HasIntersection(&player.dest, &PowArray[i].dest)){
                         PowArray[i].activate();

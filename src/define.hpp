@@ -1,7 +1,7 @@
 #pragma once
 
 // Extra modifications for game
-#define MEME_MOD 0  // Activate meme include mode
+#define MEME_MOD 1  // Activate meme include mode
 #define ADVERTISMENT_MOD 1  // Activate adv at bottom of screen
 #define ADV_HIGHT 70
 
@@ -18,12 +18,13 @@
 #define MOVING_TIME 50
 #define POWERUP_TIME 5000
 #define SHOOT_TIME 250
-#define START_NUM_ASTEROID 10
 #define MAX_LIVES 3
 #define MAX_SHIELD 100
+#define LASER_SPEED 20
 
-#define LASER_SPEED 10
+#define START_NUM_ASTEROID 10
 #define METEOR_ADD_SCORE 2000
+#define MAX_NUM_METEOR 30
 
 // Number of animation frames
 #define regularExplosionCount 9

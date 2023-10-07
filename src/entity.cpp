@@ -29,15 +29,24 @@ void Head::reset(){
     texture = Textures[IMG_player];
     SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
     dest.h /= 2; dest.w /= 2;
-    speedx = 0; speedy = 0;
+    //speedx = 0; speedy = 0;
     dest.x = SCREEN_WIDTH/2 - dest.w/2;
     dest.y = GAME_HEIGHT - 80;
     frame = 0;
     oldShootTime = SDL_GetTicks();
     BoostTime = -POWERUP_TIME;
 };
+void Head::moveLeft(){
+    if(ddx >= -1) ddx -= 1;
+};
+void Head::moveRight(){
+    if(ddx <= 1) ddx += 1;
+};
+void Head::stop(){
+    ddx = 0;
+};
 void Head::update(){
-    if(frame != 0){
+    if(frame != 0){  // Playing animation of explosion
         frame += 1;
         if(frame % 5 == 0){
             dest.x += dest.h/2; dest.y += dest.w/2;
@@ -56,13 +65,17 @@ void Head::update(){
 
         }
     }
-    else{
-        dest.x += speedx; dest.y += speedy;
-        if(dest.x+dest.w > SCREEN_WIDTH){
+    else{  // Normal movement
+        if(ddx == 0) dx/=2;
+        else dx += ddx;
+        dest.x += dx;
+        if(dest.x + dest.w > SCREEN_WIDTH){
             dest.x=SCREEN_WIDTH-dest.w;
+            dx = 0;
         }
         if(dest.x < 0){
             dest.x=0;
+            dx = 0;
         }
     }
 }
@@ -104,9 +117,10 @@ bool Bullet::isOver(){
 }
 
 // Mob class
-void Mob::init(){
+Mob::Mob(){
     texture = Textures[IMG_meteor0];
-}
+    frame = 0;
+};
 void Mob::blit(){
     SDL_RenderCopyEx( app.renderer, texture, NULL, &dest, rot, NULL, SDL_FLIP_NONE );
 }
@@ -133,7 +147,7 @@ void Mob::reset(){
     speedx = rand() % 6 - 3;
     speedy = rand() % 7 + 1;
     SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
-    dest.y = -dest.h - rand() % 50; 
+    dest.y = -dest.h - rand() % 80;
     dest.x = rand() % (SCREEN_WIDTH - dest.w);
     dRot = rand() % 16 - 8;
     frame = 0;

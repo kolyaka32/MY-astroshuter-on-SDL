@@ -20,15 +20,17 @@ public:
 class Head:public Entity
 {
     unsigned char frame;
+    int dx, ddx;// Delta speed for movement
 public:
     unsigned char shield;
     unsigned char lives;
-    int speedx;  // Delta speed for movement
-
     void reset();
+    void moveLeft();
+    void moveRight();
+    void stop();
+    void update();
     void blit();
     void blitLives();
-    void update();
     void shoot();
     void setAnimation();
     bool isAnimation();
@@ -46,8 +48,9 @@ class Mob:public Entity
 private:
     int rot; int dRot;
     unsigned char frame;
+    bool original;
 public:
-    void init();
+    Mob();
     void blit();
     void update();
     void reset();

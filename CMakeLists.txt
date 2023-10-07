@@ -53,6 +53,7 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_mixer REQUIRED)
+find_package(SDL2_net REQUIRED)
 
 
 target_include_directories( ${PROJECT_NAME}
@@ -60,8 +61,10 @@ target_include_directories( ${PROJECT_NAME}
     PUBLIC ${SDL2_image_INCLUDE_DIRS}
     PUBLIC ${SDL2_ttf_config_path}
     PUBLIC ${SDL2_mixer_config_path}
+    PUBLIC ${SDL2_net_config_path}
 )
 
 target_link_libraries(base PUBLIC ${SDL2_LIBRARIES} SDL2_image::SDL2_image mingw32)
 target_link_libraries(base PUBLIC ${SDL2_LIBRARIES} SDL2_ttf::SDL2_ttf mingw32)
 target_link_libraries(base PUBLIC ${SDL2_LIBRARIES} SDL2_mixer::SDL2_mixer mingw32)
+target_link_libraries(base PUBLIC ${SDL2_LIBRARIES} SDL2_net::SDL2_net mingw32)

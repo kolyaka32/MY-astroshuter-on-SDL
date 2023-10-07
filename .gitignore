@@ -1,4 +1,6 @@
 .vscode/
+
+# Build folder
 build/.cmake
 build/CMakeFiles
 build/cmake_install.cmake
@@ -6,7 +8,6 @@ build/CMakeCache.txt
 build/compile_commands.json
 build/Makefile
 build/Testing
-build/settings.ini
 
 # Old include libraries
 i686-w64-mingw32/
@@ -18,22 +19,39 @@ include/
 cmake/
 *.cmake
 
-# Images
-*.png
-*.jpg
-*.jpeg
-*.bmp
+# Prerequisites
+*.d
 
-# Sounds
-*.ogg
-*.wav
-
-# Executables files
-*.exe
+# Compiled Object files
+*.slo
+*.lo
 *.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
 *.dll
 
-# Archives
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Archieves
 *.7z
-*.tar.gz
 *.zip

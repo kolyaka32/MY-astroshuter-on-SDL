@@ -48,7 +48,7 @@ private:
     SDL_Rect destButton;
 public:
     Slider(int y);
-    void blit(unsigned char state);
+    void blit(Uint8 state);
     bool in(int x, int y);
     int getX();
 };
@@ -69,11 +69,24 @@ class Animation
 private:
     IMG_Animation* anim;
     SDL_Texture* texture;
-    unsigned int frame;
+    Uint32 frame;
     uint32_t prevTick;
     SDL_Rect dest;
 public:
     Animation( SDL_Rect destination, std::string name );
     void blit();
     void clear();
+};
+
+class Bar
+{
+private:
+    SDL_Rect Back_rect;
+    SDL_Rect Front_rect;
+    SDL_Rect IconeRect;
+    SDL_Texture* IconeTexture;
+    SDL_Color color;
+public:
+    Bar( const SDL_Rect dest, SDL_Color newColor, IMG_names icone );
+    void blit( int width );
 };

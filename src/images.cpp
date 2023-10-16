@@ -3,11 +3,11 @@
 
 #include "images.hpp"
 
-int c;  // Counter of loaded textures
+int ImageCnt;  // Counter of loaded textures
 
 // Load all textures
-bool loadAllTextures(){
-    c = 0;  // Loading textures with they names
+void loadAllTextures(){
+    ImageCnt = 0;  // Loading textures with they names
 
     // Base hud elements
     loadTexture(IMG_background, "img/starfield.png");
@@ -56,14 +56,21 @@ bool loadAllTextures(){
     loadTexture(IMG_sonic_explosion6, "img/sonicExplosion06.png");
     loadTexture(IMG_sonic_explosion7, "img/sonicExplosion07.png");
 
-    return (c == IMG_count);  // Returning correcting of loading
+    if(ImageCnt != IMG_count){  // Checking corrction of number of loaded images
+        printf("Couldn't load all necessary images");
+        exit(9);
+    }
 }
 
 void loadTexture(IMG_names number, std::string name){
     SDL_Texture *temp_texture = IMG_LoadTexture(app.renderer, (name).std::string::c_str() );
-    if(temp_texture != NULL){
+    if(temp_texture != NULL){  // Testing, if load correct
         Textures[number] = temp_texture;
-        c+=1;
+        ImageCnt+=1;
+    }
+    else{
+        printf("Couldn't load image: %s", name);
+        exit(8);
     }
 }
 

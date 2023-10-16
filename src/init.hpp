@@ -10,3 +10,6 @@ void initSDL();
 
 // Function of closing and deinitialasing all libraries and files
 void cleanup();
+
+// Function of setting up icone of window
+void setWindoIcone(std::string name);

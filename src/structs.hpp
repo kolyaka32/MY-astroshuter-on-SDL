@@ -11,7 +11,8 @@ struct App{
     SDL_Window *window;
 };
 
-extern App app;  // Creating main varables
+// Creating main varables
+extern App app;  // Global main render and window
 
 // All in-game textures
 extern SDL_Texture* Textures[IMG_count];  // Array of all textures
@@ -26,10 +27,8 @@ extern Mix_Chunk* Sounds[SND_count];  // Array of all sound effects
 extern bool running;  // Flag of main cycle work
 extern bool game_over;  // Flag of showing loosing screen
 
-// Times
-extern int oldShootTime;
-extern int oldMoveTime;
-extern int BoostTime;
+// Previous time
+extern Uint8 lastBoostTicks;  // Ticks from boost activation
 
 // Global entitys
 extern Head player;

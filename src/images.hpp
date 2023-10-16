@@ -58,7 +58,6 @@ enum IMG_names{
     IMG_count
 };
 
-//const unsigned char METEOR_COUNT = IMG_meteor5-IMG_meteor0; // Number of different images of meteors
 #if MEME_MOD
     #define METEOR_COUNT 7
 #else
@@ -66,7 +65,7 @@ enum IMG_names{
 #endif
 
 // Load all textures
-bool loadAllTextures();
+void loadAllTextures();
 
 // Load texture file to array
 void loadTexture(IMG_names number, std::string name);

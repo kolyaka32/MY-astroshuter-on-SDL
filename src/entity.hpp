@@ -17,25 +17,31 @@ public:
     void update();
 };
 
+
+// Main head (player) class
 class Head:public Entity
 {
-    unsigned char frame;
-    int dx, ddx;// Delta speed for movement
+    Uint8 frame;
+    Uint8 lastShootTicks;  // Ticks from last shoot
+    int dx;  // Delta speed for movement
 public:
-    unsigned char shield;
-    unsigned char lives;
+    Uint8 shield;
+    Uint8 lives;
+
     void reset();
+    void blit();
+    void blitLives();
     void moveLeft();
     void moveRight();
     void stop();
     void update();
-    void blit();
-    void blitLives();
-    void shoot();
+    void tryShoot();
     void setAnimation();
     bool isAnimation();
 };
 
+
+// Bullet class
 class Bullet:public Entity
 {
 public:
@@ -43,11 +49,13 @@ public:
     bool isOver();
 };
 
+
+// Mob (asteroid) class
 class Mob:public Entity
 {
 private:
-    int rot; int dRot;
-    unsigned char frame;
+    float rot; float dRot;
+    Uint8 frame;
     bool original;
 public:
     Mob();
@@ -60,6 +68,8 @@ public:
     SDL_Rect getDest();
 };
 
+
+// Power-up (boosters) class
 class Pow:public Entity
 {
 private:

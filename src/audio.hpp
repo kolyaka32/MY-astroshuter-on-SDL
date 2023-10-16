@@ -11,9 +11,9 @@ enum MUS_names{
 
 // Names of sound effects in array to use
 enum SND_names{
-    SND_laser,
-    SND_bolt,
-    SND_shield,
+    SND_laser,  // Sound of shooting
+    SND_bolt,  // Sound of power-up
+    SND_shield,  // Sound of shield adding
     // Explosions
     SND_regExplosion,
     SND_sonicExplosion,
@@ -22,7 +22,7 @@ enum SND_names{
 };
 
 // Load all music and effects
-bool loadAllAudio();
+void loadAllAudio();
 
 // Load music track
 void loadMusic(MUS_names number, std::string name);

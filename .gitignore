@@ -16,8 +16,6 @@ x86_64-w64-mingw32/
 # New include libraries
 lib/
 include/
-cmake/
-*.cmake
 
 # Prerequisites
 *.d

@@ -14,25 +14,20 @@
 App app;  // Creating main varables
 
 // Global numbers
-int oldShootTime;
+// Last time and previous ticks update
 int oldMoveTime;
-int BoostTime;
 int oldTickTime;
+Uint8 lastBoostTicks;  // Ticks from boost activation
 // Pause and init settings
-unsigned char language;
-unsigned char MusicVolume;
-unsigned char EffectsVolume;
-unsigned int MaxScore;
-unsigned int score = 0;
+Uint8 language;
+Uint8 MusicVolume;
+Uint8 EffectsVolume;
+Uint32 MaxScore;
+Uint16 FPS;
+Uint32 score = 0;
 // Global running flags
 bool running = true;
 bool game_over = true;
-
-const SDL_Rect ShieldRectBack = {5, 5, MAX_SHIELD, 10};  // Back part of health bar
-SDL_Rect ShieldRectFront = {5, 5, MAX_SHIELD, 10};  // Front part of health bar
-
-const SDL_Rect BoostRectBack = {5, 20, 100, 10};  // Back part of boost bar
-SDL_Rect BoostRectFront = {5, 20, 100, 10};  // Front part of boost bar
 
 // Texts variables and constants
 SDL_Texture *Textures[IMG_count];  // Array of all textures
@@ -65,23 +60,22 @@ int main(int argv, char** args){
     loadAllTextures();  // Loading sprites to the game
     loadAllAudio();  // Loading music and sounds to the game
     loadInitFile();  // Load initialasing file file with settings
+    setWindoIcone("img/Game.ico");  // Setting window icone
 
-    // Interface init
+    // Interface initialisation
     dinamicText ScoreText(18, SCREEN_WIDTH/2, 10);
     Button esc(SCREEN_WIDTH - 24, 24, IMG_esc_button);
     #if ADVERTISMENT_MOD
         Animation MenuAdvertisment({96, SCREEN_HEIGHT-192, 288, 192}, "img/ADV1.gif");
     #endif
-
-    // initializing all objects at screen
-    player.reset();
-    MobArray.resize(START_NUM_ASTEROID);
+    Bar ShieldBar({20, 5, MAX_SHIELD, 10}, {0, 255, 0, 255}, IMG_shield);  // Shield/health bar
+    Bar BoostBar({20, 20, 100, 10}, {0, 0, 255, 255}, IMG_bolt);  // Bar of the remaining boost time
 
     Mix_PlayMusic( Musics[MUS_main], -1 );  // Infinite playing music
 
     // Cycle variables
     SDL_Event event;
-    bool Shooting = false;
+    bool Shooting;
 
 	while(running)  // Main game cycle
 	{
@@ -99,37 +93,46 @@ int main(int argv, char** args){
             bool waiting = true;
 
             while(waiting&&running){
-                if(language == 1){
+                switch (language)  // Setting text of score, on whuch language selected
+                {
+                case STANDART_LNG:
+                case ENGLISH_LNG:
                     MenuHighScore.set("Ваш последний счёт: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
                     MenuMaxScore.set("Ваш максимальный счёт: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
-                }
-                else{
+                    break;
+                
+                case RUSSIAN_LNG:
                     MenuHighScore.set("Your last score: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
                     MenuMaxScore.set("Your max score: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
                 }
-                while( SDL_PollEvent(&event) != 0 ){
-                    if(event.type == SDL_QUIT){
+
+                while( SDL_PollEvent(&event) != 0 ){  // Getting events
+                    switch (event.type)
+                    {
+                    case SDL_QUIT:
                         running = false;  // Exit from program
                         waiting = false;
-                    }
-                    if (event.type == SDL_KEYDOWN) {
+                        break;
+                    
+                    case SDL_KEYDOWN:
                         waiting = false;
-                    }
-                    if (event.type == SDL_MOUSEBUTTONDOWN){
-                        // Getting mouse position
+                        break;
+                    
+                    case SDL_MOUSEBUTTONDOWN:
                         int MouseX, MouseY;
-                        SDL_GetMouseState(&MouseX, &MouseY);
+                        SDL_GetMouseState(&MouseX, &MouseY);  // Getting mouse position
                         if(esc.in(MouseX, MouseY)){  // Clicking on escape button
                             pause();
                         }
                     }
+                    if(!running) break;  // Breaking main cycle, if necesary
                 }
                 // Drawing
                 SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
                 TXT_SHMUP.draw();
                 TXT_KEYS.draw();
                 TXT_START.draw();
-                if(score != 0){
+                if(score != 0){  // Drawing game and max score, if necesary
                     MenuHighScore.draw();
                     MenuMaxScore.draw();
                 }
@@ -140,9 +143,11 @@ int main(int argv, char** args){
                 #endif
                 SDL_RenderPresent(app.renderer);
 
-                SDL_Delay(1000 / FPS);  // Delaying time to decrease CPU loading
+                SDL_Delay( 1000/FPS );    // Delaying constant time between ticks to decrease CPU loading
             }
-            MenuHighScore.clear();  MenuMaxScore.clear();
+            if(!running) break;  // Breaking main cycle, if necesary
+            MenuHighScore.clear();  
+            MenuMaxScore.clear();
             // Resetting positions and speed of all objects
             player.reset();
             player.lives = MAX_LIVES; player.shield = MAX_SHIELD;
@@ -157,10 +162,12 @@ int main(int argv, char** args){
 
         // Getting events
         while( SDL_PollEvent(&event) != 0 ){  
-            if (event.type == SDL_QUIT){
+            switch (event.type){
+            case SDL_QUIT:
                 running = false;  // Exit from program
-            }
-            if (event.type == SDL_KEYDOWN) {
+                break;
+
+            case SDL_KEYDOWN:
                 // Resseting field and next new generation
                 if (event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_a){
                     player.moveLeft();
@@ -177,8 +184,9 @@ int main(int argv, char** args){
                 if (event.key.keysym.sym == SDLK_ESCAPE){
                     pause();
                 }
-            }
-            if (event.type == SDL_KEYUP) {
+                break;
+            
+            case SDL_KEYUP:
                 if (event.key.keysym.sym == SDLK_LEFT || event.key.keysym.sym == SDLK_RIGHT 
                 || event.key.keysym.sym == SDLK_a || event.key.keysym.sym == SDLK_d) {
                     player.stop();
@@ -186,22 +194,24 @@ int main(int argv, char** args){
                 if (event.key.keysym.sym == SDLK_SPACE){
                     Shooting = false;
                 }
-            }
-            if (event.type == SDL_MOUSEBUTTONDOWN){
-                // Getting mouse position
+                break;
+            
+            case SDL_MOUSEBUTTONDOWN:
                 int MouseX, MouseY;
-                SDL_GetMouseState(&MouseX, &MouseY);
-                if(esc.in(MouseX, MouseY)){  // Clicking on escape button
+                SDL_GetMouseState(&MouseX, &MouseY);  // Getting mouse position
+                if(esc.in(MouseX, MouseY)){  // Checking clicking on escape button
                     pause();
                 }
+                break;
             }
+            if(!running) break;  // Breaking main cycle, if necesary
         }
-
-        if(SDL_GetTicks() - oldMoveTime > MOVING_TIME){  // Updating all objects once per need time
+        // Objects update
+        if(SDL_GetTicks() - oldMoveTime > 1000/UPDATE_FPS){  // Updating all objects once per need time
             // Moving all objects
             player.update();
-            if(Shooting && player.isAnimation()){
-                player.shoot();  // Player shooting
+            if(Shooting){
+                player.tryShoot();  // Player shooting
             }
             for(int i=0; i< MobArray.size(); ++i){
                 MobArray[i].update();
@@ -216,23 +226,25 @@ int main(int argv, char** args){
             for(int i=0; i<BulletArray.size(); ++i){
                 if(BulletArray[i].isOver()){
                     BulletArray.erase(BulletArray.begin()+i);  // Deleting bullets, if over edges
+                    i--;
                 }
             }
             for(int i=0; i<PowArray.size(); ++i){
                 if(PowArray[i].isOver()){
                     PowArray.erase(PowArray.begin()+i);  // Deleting PowerUps, if over edges
+                    i--;
                 }
             }
             for(int i=0; i<MobArray.size(); ++i){
                 if(MobArray[i].isOver()){
                     MobArray[i].reset();  // Resseting asteroids, if over edges
+                    i--;
                 }
             }
             // Collsions of the objects
             for(int i=0; i < BulletArray.size(); ++i){  // Getting collisons of bullets and asteroids
                 for(int j=0; j < MobArray.size(); ++j){  // year, n^2, not optimal
-                    if((MobArray[j].isAnimation()) && 
-                    (SDL_HasIntersection(&BulletArray[i].dest, &MobArray[j].dest))){
+                    if((MobArray[j].isAnimation()) && (SDL_HasIntersection(&BulletArray[i].dest, &MobArray[j].dest))){
                         // Explosion of meteor
                         score += MobArray[j].dest.w;  // Increasing global score
                         // Adding meteor for increassing difficulty
@@ -241,6 +253,7 @@ int main(int argv, char** args){
                             MobArray[MobArray.size()-1].reset();
                         }
                         BulletArray.erase(BulletArray.begin()+i);  // Deliting bullet
+                        i--;
                         Mix_PlayChannel(-1, Sounds[SND_regExplosion], 0);  // Sound of explosion
                         MobArray[j].setAnimation();
                         if(rand() % 10 == 0){  // Random creating of power-up
@@ -272,10 +285,16 @@ int main(int argv, char** args){
                     if(SDL_HasIntersection(&player.dest, &PowArray[i].dest)){
                         PowArray[i].activate();
                         PowArray.erase(PowArray.begin()+i);  // Deleting power ups, if collide with player
+                        i--;
                     }
                 }
-            } 
+            }
+            if(lastBoostTicks != 0){
+                lastBoostTicks--;
+            }
+            oldMoveTime = SDL_GetTicks();
         }
+
         // Drawing objects at screen
         SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
 
@@ -291,19 +310,11 @@ int main(int argv, char** args){
         }
 
         // Drawing text and icons at screen
-        SDL_SetRenderDrawColor(app.renderer, 255, 255, 255, 255);  // Drawing shield bar
-        SDL_RenderFillRect(app.renderer, &ShieldRectBack);  // White bar
-        ShieldRectFront.w = player.shield;  // Setting width (health bar) 
-        SDL_SetRenderDrawColor(app.renderer, 0, 255, 0, 255);
-        SDL_RenderFillRect(app.renderer, &ShieldRectFront);  // Green bar 
-
-        if(SDL_GetTicks() - BoostTime < POWERUP_TIME){  // Drawing boost bar if neccesary
-            SDL_SetRenderDrawColor(app.renderer, 255, 255, 255, 255);
-            SDL_RenderFillRect(app.renderer, &BoostRectBack);  // White bar
-            BoostRectFront.w = ( 100 - ((SDL_GetTicks() - BoostTime) / 50) );  // Setting width (Boost bar) 
-            SDL_SetRenderDrawColor(app.renderer, 0, 0, 255, 255);
-            SDL_RenderFillRect(app.renderer, &BoostRectFront);  // Blue bar 
+        ShieldBar.blit(player.shield);
+        if(lastBoostTicks > 0){
+            BoostBar.blit( 100 * lastBoostTicks / D_POWERUP_TICKS  );
         }
+
         ScoreText.draw(std::to_string(score), MIDLE_text);  // Drawing score at screen
         player.blitLives();  // Drawing lives of player at screen
         esc.blit();  // Drawing escape button on screen
@@ -311,7 +322,7 @@ int main(int argv, char** args){
             Advertisment.blit();  // Drawing advertisment at bottom
         #endif
         
-        SDL_RenderPresent(app.renderer);  // Blitting textures on screen
+        SDL_RenderPresent(app.renderer);  // Blitting all objects on screen
 
         if( 1000/FPS > (SDL_GetTicks() - oldTickTime) ){  //
             SDL_Delay( 1000/FPS - (SDL_GetTicks() - oldTickTime) );  // Delaying constant time between ticks to decrease CPU loading

@@ -1,12 +1,13 @@
 #include "include.hpp"
 #include "structs.hpp"
+#include "audio.hpp"
 
 // Counter of succsesful loadins
-int cnt;
+int AudioCnt;
 
 // Load all music and effects
-bool loadAllAudio(){
-    cnt = 0;
+void loadAllAudio(){
+    AudioCnt = 0;
 
     // Loading all music
     loadMusic(MUS_main, "snd/tgfcoder-FrozenJam-SeamlessLoop.ogg");
@@ -18,14 +19,17 @@ bool loadAllAudio(){
     loadSound(SND_regExplosion, "snd/expl3.wav");
     loadSound(SND_sonicExplosion, "snd/expl6.wav");
 
-    return(cnt == MUS_count+SND_count);
+    if(AudioCnt != SND_count + MUS_count){  // Checking corrction of number of loaded sounds
+        printf("Couldn't load all necessary sounds");
+        exit(9);
+    }
 }
 
 // Load music track
 void loadMusic(MUS_names number, std::string name){
     Musics[number] = Mix_LoadMUS((name).std::string::c_str());
     if(Musics[number] != NULL){
-        cnt+=1;
+        AudioCnt+=1;
     }
 }
 
@@ -33,7 +37,7 @@ void loadMusic(MUS_names number, std::string name){
 void loadSound(SND_names number, std::string name){
     Sounds[number] = Mix_LoadWAV((name).std::string::c_str());
     if(Sounds[number] != NULL){
-        cnt+=1;
+        AudioCnt+=1;
     }
 }
 

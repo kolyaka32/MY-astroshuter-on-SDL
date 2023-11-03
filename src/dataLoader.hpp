@@ -2,6 +2,23 @@
 
 #include "include.hpp"
 #include "define.hpp"
+#include "structs.hpp"
+
+class dataLoader
+{
+private:
+    SDL_RWops* dataFile;
+    void expectCorrection();  // Function of expecting correction of numbers
+    void loadIcone();  // Loading game icone
+    void loadImage();  // Loading all images
+    void loadAnimation();  // Loading all GIF-animations
+    void loadAudio();  // Loading all audio and music files
+    void loadFont();  // Loading fonts 
+public:
+    void init(std::string name);  // Function of initialasing and loading data file
+    void unload();
+};
+
 
 // Names of images in array to using
 enum IMG_names{
@@ -24,10 +41,8 @@ enum IMG_names{
     IMG_meteor2,
     IMG_meteor3,
     IMG_meteor4,
-    #if MEME_MOD
-        IMG_meteorSpecial,
-    #endif
     IMG_meteor5,
+    IMG_meteorSpecial,
 
     // Powerups
     IMG_bolt,
@@ -64,11 +79,31 @@ enum IMG_names{
     #define METEOR_COUNT 6
 #endif
 
-// Load all textures
-void loadAllTextures();
+// Names of music in array to use
+enum MUS_names{
+    MUS_main,  // Main in-game song
+    MUS_menu,  // Menu waiting song
+    // Final counter 
+    MUS_count
+};
 
-// Load texture file to array
-void loadTexture(IMG_names number, std::string name);
+// Names of sound effects in array to use
+enum SND_names{
+    SND_laser,  // Sound of shooting
+    SND_bolt,  // Sound of power-up
+    SND_shield,  // Sound of shield adding
+    // Explosions
+    SND_regExplosion,
+    SND_sonicExplosion,
+    // Final counter 
+    SND_count
+};
 
-// Function of unloading 
-void unloadTextures();
+// Names of animations in array to use
+enum ANIM_types{
+    ANIM_menu,  // Menu animation of maxwell cat
+    ANIM_adv,  // In game advertisment (of watermellon)
+
+    // Final counter
+    ANIM_count
+};

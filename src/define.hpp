@@ -1,19 +1,16 @@
 #pragma once
 
 // Extra modifications for game
-#define MEME_MOD 0  // Activate meme include mode
-#define ADVERTISMENT_MOD 1  // Activate adv at bottom of screen
+#define MEME_MOD true  // Activate meme include mode
 #define ADV_HIGHT 70
 
 // System numbers
 #define WINDOWNAME "Astroshuter on SDL"
 #define SCREEN_WIDTH 480
 #define GAME_HEIGHT 600
-#define SCREEN_HEIGHT GAME_HEIGHT + ADV_HIGHT * ADVERTISMENT_MOD
+#define SCREEN_HEIGHT GAME_HEIGHT
 #define BASE_FPS 60
-#define UPDATE_FPS 60
-
-#define FONT_NAME "Arial.ttf"  // Main use font for drawing
+#define UPDATE_FPS 50
 
 // Balance options
 #define D_SHOOT_TICKS 12
@@ -37,3 +34,7 @@ enum POW_types{
     POW_shield,
     POW_count
 };
+
+// Macroses
+#define MAX(a, b) (a > b ? a : b)
+#define MIN(a, b) (a < b ? a : b)

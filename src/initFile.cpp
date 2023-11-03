@@ -15,7 +15,8 @@ void loadInitFile(){
     MusicVolume = MIX_MAX_VOLUME/2;
     EffectsVolume = MIX_MAX_VOLUME/2;
     MaxScore = 0;
-    FPS = BASE_FPS;
+    drawFPS = BASE_FPS;
+    advertisingMode = true;
 
     while(std::getline(in, line)){  // Reading file until it end
         std::string first = line.substr(0, line.find(' '));
@@ -39,11 +40,16 @@ void loadInitFile(){
             MaxScore = std::stoi( line.substr(line.rfind(' ')+1) );
         }
         else if( first == "FPS" ){
-            FPS = std::stoi( line.substr(line.rfind(' ')+1) );
+            drawFPS = std::stoi( line.substr(line.rfind(' ')+1) );
+        }
+        else if( first == "advertising"){
+            advertisingMode = std::stoi( line.substr(line.rfind(' ')+1) );
         }
     }
     in.close();  // Closing reading file
+}
 
+void setInitData(){
     // Initialasing constant start text 
     switch (language)  // Setting up language
     {
@@ -55,6 +61,7 @@ void loadInitFile(){
         setRussianText();
         break;
     }
+    // Setting volumes of sounds
     Mix_VolumeMusic(MusicVolume);  // Setting volume of music
     Mix_Volume(-1, EffectsVolume);  // Setting volume of effects
 }
@@ -66,7 +73,6 @@ void saveInitFile(){
     // Writing data to output
     switch (language)  // Writing language
     {
-    
     case STANDART_LNG:
     case ENGLISH_LNG:
     default:
@@ -79,7 +85,8 @@ void saveInitFile(){
     setting << "music = " << std::to_string(MusicVolume) << std::endl;  // Writing music volume
     setting << "effects = " << std::to_string(EffectsVolume) << std::endl;  // Writing effects volume
     setting << "maxScore = " << std::to_string(MaxScore) << std::endl;  // Writing max getting score
-    setting << "FPS = " << std::to_string(FPS) << std::endl;  // Writing frames per seconds
+    setting << "FPS = " << std::to_string(drawFPS) << std::endl;  // Writing frames per seconds
+    setting << "advertising = " << std::to_string(advertisingMode);  // Writing state
 
     setting.close();  // Closing file
 }

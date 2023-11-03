@@ -11,13 +11,16 @@ enum ALIGNMENT_types{
     RIGHT_text
 };
 
+// Function of creating font with need height
+TTF_Font* createFont(int size);
+
 // Static text on screen with drawing functions
 class staticText
 {
 private:
-    TTF_Font* Font;
-    SDL_Surface *Surface;
-    SDL_Texture *Texture;
+    TTF_Font* Font = NULL;
+    SDL_Surface *Surface = NULL;
+    SDL_Texture *Texture = NULL;
     SDL_Rect Rect;
 public:
     void clear();
@@ -67,13 +70,14 @@ public:
 class Animation
 {
 private:
-    IMG_Animation* anim;
+    //IMG_Animation* anim;
+    Uint8 type;
     SDL_Texture* texture;
     Uint32 frame;
     uint32_t prevTick;
     SDL_Rect dest;
 public:
-    Animation( SDL_Rect destination, std::string name );
+    Animation( SDL_Rect destination, ANIM_types newType );
     void blit();
     void clear();
 };

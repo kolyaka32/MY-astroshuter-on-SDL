@@ -4,33 +4,36 @@
 #include "structs.hpp"
 
 #include "init.hpp"
-#include "images.hpp"
-#include "audio.hpp"
+#include "dataLoader.hpp"
 #include "baseHud.hpp"
 #include "pause.hpp"
 #include "initFile.hpp"
 #include "entity.hpp"
 
 App app;  // Creating main varables
+FontData fontData;  // Global data for creating fonts
 
 // Global numbers
 // Last time and previous ticks update
-int oldMoveTime;
-int oldTickTime;
-Uint8 lastBoostTicks;  // Ticks from boost activation
+Uint64 oldMoveTime;
+Uint64 oldDrawTime;
+Uint16 lastBoostTicks;  // Ticks from boost activation
 // Pause and init settings
-Uint8 language;
-Uint8 MusicVolume;
-Uint8 EffectsVolume;
-Uint32 MaxScore;
-Uint16 FPS;
-Uint32 score = 0;
+Uint8 language;  // Switched languaged from language_types
+Uint8 MusicVolume;  // Volume of music
+Uint8 EffectsVolume;  // Volume of effects
+Uint32 MaxScore;  // Max previous game score
+Uint16 drawFPS;  // Max terget FPS to draw
+Uint32 score;  // Game score
+
 // Global running flags
-bool running = true;
-bool game_over = true;
+bool running = true;  // Main cycle game flag of running
+bool game_over = true;  // Flag of ending the round
+bool advertisingMode;  // Mode of showing 'advertisment'
 
 // Texts variables and constants
-SDL_Texture *Textures[IMG_count];  // Array of all textures
+SDL_Texture* Textures[IMG_count];  // Array of all textures
+IMG_Animation* Animations[ANIM_count];  // Array of all animations
 Mix_Music* Musics[MUS_count];  // Array of all music
 Mix_Chunk* Sounds[SND_count];  // Array of all sound effects
 
@@ -41,12 +44,10 @@ staticText TXT_START;
 staticText TXT_Pause;
 staticText TXT_Music;
 staticText TXT_Sound;
-staticText MenuHighScore;
-staticText MenuMaxScore;
-
-#if ADVERTISMENT_MOD
-    Animation Advertisment({0, GAME_HEIGHT, SCREEN_WIDTH, ADV_HIGHT}, "img/ADV2.gif");
-#endif
+staticText TXT_MenuHighScore;
+staticText TXT_MenuMaxScore;
+Animation Advertisment({0, GAME_HEIGHT, SCREEN_WIDTH, ADV_HIGHT}, ANIM_adv);
+Animation MenuAdvertisment({96, SCREEN_HEIGHT-192, 288, 192}, ANIM_menu);
 
 // Initialasing dinamic structures
 Head player;
@@ -56,22 +57,24 @@ std::vector<Pow> PowArray;
 
 // Main function
 int main(int argv, char** args){
-    initSDL();  // Initialasing of main SDL library
-    loadAllTextures();  // Loading sprites to the game
-    loadAllAudio();  // Loading music and sounds to the game
+    initLibraries();  // Initialasing all need libraries
     loadInitFile();  // Load initialasing file file with settings
-    setWindoIcone("img/Game.ico");  // Setting window icone
+    createVideo(advertisingMode);  // Creating video output system
+    
+    // Loading data from file
+    dataLoader loader;
+    loader.init("data.dat");
+
+    setInitData();  // Setting data from init file to program
 
     // Interface initialisation
     dinamicText ScoreText(18, SCREEN_WIDTH/2, 10);
     Button esc(SCREEN_WIDTH - 24, 24, IMG_esc_button);
-    #if ADVERTISMENT_MOD
-        Animation MenuAdvertisment({96, SCREEN_HEIGHT-192, 288, 192}, "img/ADV1.gif");
-    #endif
+    if(!advertisingMode){
+        Mix_PlayMusic( Musics[MUS_main], -1 );  // Infinite playing music without advertisment
+    }
     Bar ShieldBar({20, 5, MAX_SHIELD, 10}, {0, 255, 0, 255}, IMG_shield);  // Shield/health bar
     Bar BoostBar({20, 20, 100, 10}, {0, 0, 255, 255}, IMG_bolt);  // Bar of the remaining boost time
-
-    Mix_PlayMusic( Musics[MUS_main], -1 );  // Infinite playing music
 
     // Cycle variables
     SDL_Event event;
@@ -91,21 +94,24 @@ int main(int argv, char** args){
 
             // Starting loop for waiting for start
             bool waiting = true;
+            if(advertisingMode){
+                Mix_PlayMusic( Musics[MUS_menu], -1 );  // Infinite playing music
+            }
 
-            while(waiting&&running){
-                switch (language)  // Setting text of score, on whuch language selected
-                {
-                case STANDART_LNG:
-                case ENGLISH_LNG:
-                    MenuHighScore.set("Ваш последний счёт: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
-                    MenuMaxScore.set("Ваш максимальный счёт: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
-                    break;
-                
-                case RUSSIAN_LNG:
-                    MenuHighScore.set("Your last score: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
-                    MenuMaxScore.set("Your max score: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
-                }
+            switch (language)  // Setting text of score, on whuch language selected
+            {
+            case STANDART_LNG:
+            case ENGLISH_LNG:
+                TXT_MenuHighScore.set("Ваш последний счёт: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
+                TXT_MenuMaxScore.set("Ваш максимальный счёт: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
+                break;
+            
+            case RUSSIAN_LNG:
+                TXT_MenuHighScore.set("Your last score: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
+                TXT_MenuMaxScore.set("Your max score: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
+            }
 
+            while(waiting && running){
                 while( SDL_PollEvent(&event) != 0 ){  // Getting events
                     switch (event.type)
                     {
@@ -115,7 +121,12 @@ int main(int argv, char** args){
                         break;
                     
                     case SDL_KEYDOWN:
-                        waiting = false;
+                        if(event.key.keysym.sym == SDLK_ESCAPE){
+                            pause();  // Going to pause menu by escape button
+                        }
+                        else{
+                            waiting = false;
+                        }
                         break;
                     
                     case SDL_MOUSEBUTTONDOWN:
@@ -125,29 +136,29 @@ int main(int argv, char** args){
                             pause();
                         }
                     }
-                    if(!running) break;  // Breaking main cycle, if necesary
                 }
+                if(!running) break;  // Breaking main cycle, if necesary
                 // Drawing
                 SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
                 TXT_SHMUP.draw();
                 TXT_KEYS.draw();
                 TXT_START.draw();
                 if(score != 0){  // Drawing game and max score, if necesary
-                    MenuHighScore.draw();
-                    MenuMaxScore.draw();
+                    TXT_MenuHighScore.draw();
+                    TXT_MenuMaxScore.draw();
                 }
 
                 esc.blit();
-                #if ADVERTISMENT_MOD
+                if(advertisingMode){
                     MenuAdvertisment.blit();
-                #endif
+                }
                 SDL_RenderPresent(app.renderer);
 
-                SDL_Delay( 1000/FPS );    // Delaying constant time between ticks to decrease CPU loading
+                SDL_Delay( 1000/drawFPS );    // Delaying constant time between ticks to decrease CPU loading
             }
             if(!running) break;  // Breaking main cycle, if necesary
-            MenuHighScore.clear();  
-            MenuMaxScore.clear();
+            TXT_MenuHighScore.clear();  
+            TXT_MenuMaxScore.clear();
             // Resetting positions and speed of all objects
             player.reset();
             player.lives = MAX_LIVES; player.shield = MAX_SHIELD;
@@ -158,6 +169,9 @@ int main(int argv, char** args){
             // Resetting values
             game_over = false;
             score = 0;
+            if(advertisingMode){
+                Mix_PlayMusic( Musics[MUS_main], -1 );  // Infinite playing music
+            }
         }
 
         // Getting events
@@ -204,10 +218,11 @@ int main(int argv, char** args){
                 }
                 break;
             }
-            if(!running) break;  // Breaking main cycle, if necesary
         }
+        if(!running) break;  // Breaking main cycle, if necesary
+        
         // Objects update
-        if(SDL_GetTicks() - oldMoveTime > 1000/UPDATE_FPS){  // Updating all objects once per need time
+        if( ((SDL_GetTicks64() - oldMoveTime) > 1000 / UPDATE_FPS) ){  // Updating all objects once per need time
             // Moving all objects
             player.update();
             if(Shooting){
@@ -292,42 +307,46 @@ int main(int argv, char** args){
             if(lastBoostTicks != 0){
                 lastBoostTicks--;
             }
-            oldMoveTime = SDL_GetTicks();
+            oldMoveTime = SDL_GetTicks64();
         }
 
-        // Drawing objects at screen
-        SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
+        // Drawing all at screen
+        if(SDL_GetTicks64() - oldDrawTime > 1000 / drawFPS){  // Checking, if drawing need
+            SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
 
-        player.blit();  // Drawing player at screen
-        for(int i=0; i<BulletArray.size(); ++i){  // Drawing all bullets at screen
-            BulletArray[i].blit();
-        }
-        for(int i=0; i < MobArray.size(); ++i){
-            MobArray[i].blit();  // Drawing all asteroids at screen
-        }
-        for(int i=0; i<PowArray.size(); ++i){  // Drawing all power ups at screen
-            PowArray[i].blit();
-        }
+            player.blit();  // Drawing player at screen
+            for(int i=0; i<BulletArray.size(); ++i){  // Drawing all bullets at screen
+                BulletArray[i].blit();
+            }
+            for(int i=0; i < MobArray.size(); ++i){
+                MobArray[i].blit();  // Drawing all asteroids at screen
+            }
+            for(int i=0; i<PowArray.size(); ++i){  // Drawing all power ups at screen
+                PowArray[i].blit();
+            }
 
-        // Drawing text and icons at screen
-        ShieldBar.blit(player.shield);
-        if(lastBoostTicks > 0){
-            BoostBar.blit( 100 * lastBoostTicks / D_POWERUP_TICKS  );
-        }
+            // Drawing text and icons at screen
+            ShieldBar.blit(player.shield);
+            if(lastBoostTicks > 0){
+                BoostBar.blit( 100 * lastBoostTicks / D_POWERUP_TICKS  );
+            }
 
-        ScoreText.draw(std::to_string(score), MIDLE_text);  // Drawing score at screen
-        player.blitLives();  // Drawing lives of player at screen
-        esc.blit();  // Drawing escape button on screen
-        #if ADVERTISMENT_MOD
-            Advertisment.blit();  // Drawing advertisment at bottom
-        #endif
-        
-        SDL_RenderPresent(app.renderer);  // Blitting all objects on screen
+            ScoreText.draw(std::to_string(score), MIDLE_text);  // Drawing score at screen
+            player.blitLives();  // Drawing lives of player at screen
+            esc.blit();  // Drawing escape button on screen
+            if(advertisingMode){
+                Advertisment.blit();  // Drawing advertisment at bottom
+            }
+            
+            SDL_RenderPresent(app.renderer);  // Blitting all objects on screen
 
-        if( 1000/FPS > (SDL_GetTicks() - oldTickTime) ){  //
-            SDL_Delay( 1000/FPS - (SDL_GetTicks() - oldTickTime) );  // Delaying constant time between ticks to decrease CPU loading
-        }
-        oldTickTime = SDL_GetTicks();  // Setting time of previous tick
+            oldDrawTime = SDL_GetTicks64();  // Getting last update time
+        };
+
+        // Waiting until next moving or drawing
+        int MoveSleep = ((SDL_GetTicks64() - oldMoveTime) - 1000/UPDATE_FPS);
+        int DrawSleep = ((SDL_GetTicks64() - oldDrawTime) - 1000/drawFPS);
+        SDL_Delay( MAX(MIN( MoveSleep, DrawSleep ), 0) );
 	}
     // Exiting program
     saveInitFile();  // Saving all data to setting file for next start
@@ -340,14 +359,15 @@ int main(int argv, char** args){
     TXT_Pause.clear();
     TXT_Music.clear();
     TXT_Sound.clear();
-    #if ADVERTISMENT_MOD
+    if(advertisingMode){
         Advertisment.clear();
         MenuAdvertisment.clear();
-    #endif
+    }
 
     // Cleaning all data
-    unloadAllAudio();
-    unloadTextures();
-    cleanup();
+    loader.unload();
+    // Exiting
+    deleteVideo();  // Destroying video output
+    exitLibraries();  // Exiting all libraries
 	return 0;
 }

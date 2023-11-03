@@ -1,23 +1,29 @@
 #include "include.hpp"
 #include "define.hpp"
 #include "structs.hpp"
-#include "images.hpp"
+#include "dataLoader.hpp"
 #include "baseHud.hpp"
+
+// Function of creating font
+TTF_Font* createFont(int size){
+    SDL_RWops* tempRW = SDL_RWFromMem(fontData.fontMem, fontData.size);
+    return TTF_OpenFontRW(tempRW, 1, size);
+};
 
 // Class of static text
 void staticText::clear(){
     SDL_FreeSurface(Surface);
     SDL_DestroyTexture(Texture);
     TTF_CloseFont(Font);
-}
+};
 
 void staticText::set(std::string text, int size, ALIGNMENT_types alignment, int x, int y, SDL_Color color ){
-    Font = TTF_OpenFont(FONT_NAME, size);  // Reading font to drawing text
+    Font = createFont(size);
     Surface = TTF_RenderUTF8_Solid(Font, text.std::string::c_str(), color);
     Texture = SDL_CreateTextureFromSurface(app.renderer, Surface);
     SDL_QueryTexture(Texture, NULL, NULL, &Rect.w, &Rect.h);
     Rect.x = x - Rect.w * alignment/2; Rect.y = y;
-}
+};
 
 void staticText::draw(){
     SDL_RenderCopy(app.renderer, Texture, NULL, &Rect);
@@ -26,13 +32,13 @@ void staticText::draw(){
 
 // Class of drawing dinamic text at screen
 dinamicText::dinamicText(const int size, int x, int y){
-    Font = TTF_OpenFont(FONT_NAME, size);  // Reading font to drawing text
+    Font = createFont(size);
     X = x; Rect.y = y;
 }
 
 void dinamicText::clear(){
     TTF_CloseFont(Font);
-    SDL_FreeSurface(Surface);
+    //SDL_FreeSurface(Surface);
     SDL_DestroyTexture(Texture);
 }
 
@@ -87,31 +93,29 @@ bool Button::in(int x, int y){
         (y > dest.y && y < dest.y+dest.h));
 };
 
-// GIF animation play
-Animation::Animation( SDL_Rect destination, std::string name ){
-    // Creating animation
-    SDL_RWops* rwo = SDL_RWFromFile(name.std::string::c_str(), "r");
-    anim = IMG_LoadGIFAnimation_RW(rwo);
-    SDL_RWclose(rwo);
 
+// GIF animation play
+Animation::Animation( SDL_Rect destination, ANIM_types newType ){
+    // Creating animation
+    type = newType;
     dest = destination;
     frame = 0; 
-    prevTick = SDL_GetTicks();
+    prevTick = 0;
 };
 
 void Animation::blit(){
-    texture = SDL_CreateTextureFromSurface(app.renderer, anim->frames[frame]);
+    texture = SDL_CreateTextureFromSurface(app.renderer, Animations[type]->frames[frame]);
     SDL_RenderCopy(app.renderer, texture, NULL, &dest);
-    if(SDL_GetTicks() > prevTick + anim->delays[0]*2/3){
-        frame = (frame+1) % anim->count;
-        prevTick = SDL_GetTicks();
+    if(SDL_GetTicks64() > prevTick + Animations[type]->delays[0]*2/3){
+        frame = (frame+1) % Animations[type]->count;
+        prevTick = SDL_GetTicks64();
     }
 };
 
 void Animation::clear(){
     SDL_DestroyTexture(texture);
-    IMG_FreeAnimation(anim);
 };
+
 
 // Bar class
 Bar::Bar( const SDL_Rect dest, SDL_Color newColor, IMG_names icone ){

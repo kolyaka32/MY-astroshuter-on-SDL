@@ -19,8 +19,8 @@ void setEnglishText(){
     TXT_Pause.set("Game on pause", 30, MIDLE_text, SCREEN_WIDTH/2, 20);
     TXT_Music.set("Music", 22, MIDLE_text, SCREEN_WIDTH/2, 250);
     TXT_Sound.set("Sounds", 22, MIDLE_text, SCREEN_WIDTH/2, 400);
-    MenuHighScore.set("Your last score: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
-    MenuMaxScore.set("Your max score: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
+    TXT_MenuHighScore.set("Your last score: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
+    TXT_MenuMaxScore.set("Your max score: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
     SDL_SetWindowTitle(app.window, "Astroshuter on SDL");
 };
 
@@ -31,8 +31,8 @@ void setRussianText(){
     TXT_Pause.set("Игра на паузе", 30, MIDLE_text, SCREEN_WIDTH/2, 20);
     TXT_Music.set("Музыка", 22, MIDLE_text, SCREEN_WIDTH/2, 250);
     TXT_Sound.set("Звук", 22, MIDLE_text, SCREEN_WIDTH/2, 400);
-    MenuHighScore.set("Ваш последний счёт: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
-    MenuMaxScore.set("Ваш максимальный счёт: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
+    TXT_MenuHighScore.set("Ваш последний счёт: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
+    TXT_MenuMaxScore.set("Ваш максимальный счёт: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
     SDL_SetWindowTitle(app.window, "Астрошутер на SDL");
 };
 
@@ -48,6 +48,7 @@ void pause(){
     bool waiting = true;
     bool MouseDown = false;
     char inBox = NORMAL_BOX;
+    Sint64 prevSND = SDL_GetTicks64();
     while(waiting){  // Starting loop for waiting for start
         while( SDL_PollEvent(&event) != 0 ){
             switch (event.type)
@@ -102,6 +103,12 @@ void pause(){
             if(MouseX - SoundSlider.getX() < 0) EffectsVolume = 0;
             if(MouseX - SoundSlider.getX() > 255) EffectsVolume = 255;
             Mix_Volume(-1, EffectsVolume);  // Setting volume of effects
+            
+            // Playing sound effect for understanding loud
+            if( SDL_GetTicks64() - prevSND > 200 ){
+                Mix_PlayChannel(-1, Sounds[SND_laser], 0);
+                prevSND = SDL_GetTicks64();
+            }
             break;
         case ENGLISH_BOX:  // If touch english language box
             setEnglishText();
@@ -120,10 +127,10 @@ void pause(){
         SoundSlider.blit(EffectsVolume*2);  // Drawing sliders
         BtnFlagUSA.blit();
         BtnFlagRUS.blit();  // Drawing buttons
-        #if ADVERTISMENT_MOD
+        if(advertisingMode){
             Advertisment.blit();  // Drawing advertisment at bottom
-        #endif
+        }
         SDL_RenderPresent(app.renderer);  // Blitting textures on screen
-        SDL_Delay(1000 / FPS);  // Delaying time to decrease CPU loading
+        SDL_Delay(1000 / drawFPS);  // Delaying time to decrease CPU loading
     }
 };

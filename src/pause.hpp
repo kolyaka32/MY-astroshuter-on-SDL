@@ -24,12 +24,9 @@ extern staticText TXT_START;
 extern staticText TXT_Pause;
 extern staticText TXT_Music;
 extern staticText TXT_Sound;
-extern staticText MenuHighScore;
-extern staticText MenuMaxScore;
-
-#if ADVERTISMENT_MOD
+extern staticText TXT_MenuHighScore;
+extern staticText TXT_MenuMaxScore;
 extern Animation Advertisment;
-#endif
 
 // External values to save and load from settings file
 extern Uint8 language;  // Language settings
@@ -37,4 +34,4 @@ extern Uint8 MusicVolume;  // Start volume of music
 extern Uint8 EffectsVolume;  // Start volume of effects
 extern Uint32 score;  // Current player score
 extern Uint32 MaxScore;  // Maximal player score
-extern Uint16 FPS;  // Setted frames per seconds
+extern Uint16 drawFPS;  // Setted frames per seconds

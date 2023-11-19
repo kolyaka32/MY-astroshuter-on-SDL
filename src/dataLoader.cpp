@@ -81,9 +81,9 @@ void dataLoader::loadAudio(){
         SDL_RWops* tempRW1 = SDL_RWFromFile("snd/mainTheme.ogg", "r");
         Musics[i] = Mix_LoadMUS_RW(tempRW1, 1);
     }*/
-    SDL_RWops* tempRW1 = SDL_RWFromFile("snd/mainTheme.ogg", "r");
+    SDL_RWops* tempRW1 = SDL_RWFromFile("mus/mainTheme.ogg", "r");
     Musics[MUS_main] = Mix_LoadMUSType_RW(tempRW1, MUS_OGG, 1);
-    SDL_RWops* tempRW2 = SDL_RWFromFile("snd/menuTheme.ogg", "r");
+    SDL_RWops* tempRW2 = SDL_RWFromFile("mus/menuTheme.ogg", "r");
     Musics[MUS_menu] = Mix_LoadMUSType_RW(tempRW2, MUS_OGG, 1);
 
     for(int i=0; i<SND_count;++i){

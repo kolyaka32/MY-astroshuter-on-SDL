@@ -1,3 +1,6 @@
+# All untarget for git files
+
+# Compailing sytems
 .vscode/
 
 # Build folder
@@ -8,12 +11,15 @@ build/CMakeCache.txt
 build/compile_commands.json
 build/Makefile
 build/Testing
+*.ini
 
 # Old include libraries
 i686-w64-mingw32/
 x86_64-w64-mingw32/
 
 # New include libraries
+bin/
+cmake/
 lib/
 include/
 
@@ -35,10 +41,6 @@ include/
 *.dylib
 *.dll
 
-# Fortran module files
-*.mod
-*.smod
-
 # Compiled Static libraries
 *.lai
 *.la
@@ -47,10 +49,8 @@ include/
 
 # Executables
 *.exe
-*.out
-*.app
 
-# Archieves
+# Archives
 *.7z
 *.zip
 

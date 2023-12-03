@@ -1,43 +1,39 @@
 #pragma once
 
 #include "include.hpp"
-#include "define.hpp"
-#include "structs.hpp"
 
 // Game classes
 // Base entity in-game class
 class Entity{
 protected:
-    int speedx, speedy;
-    SDL_Texture *texture;
+    int speedx, speedy;    // Speeds (or deltas) - movement per tick
+    SDL_Texture *texture;  // Poiter to texture of sprite
 public:
-    SDL_Rect dest;
-
-    void blit();
-    void update();
+    SDL_Rect dest;         // Base destination of drawing
+    void blit();           // Base drawing function
+    void update();         // Base update and moving function
 };
 
 
 // Main head (player) class
 class Head:public Entity
 {
-    Uint8 frame;
-    Uint8 lastShootTicks;  // Ticks from last shoot
-    int dx;  // Delta speed for movement
+    Uint8 frame;            // Frame counter of animation
+    Uint8 lastShootTicks;   // Ticks from last shoot
+    int dx;                 // Delta speed for movement
 public:
-    Uint8 shield;
-    Uint8 lives;
+    Uint8 shield;           // "Health bar"
+    Uint8 lives;            // Counter of rest lives
 
-    void reset();
-    void blit();
-    void blitLives();
-    void moveLeft();
-    void moveRight();
-    void stop();
-    void update();
-    void tryShoot();
-    void setAnimation();
-    bool isAnimation();
+    void reset();           // Function of resseting poition and texture
+    void moveLeft();        // Try move left
+    void moveRight();       // Try move right
+    void stop();            // Try stopping movement
+    void tryShoot();        // Try shoot bullet
+    void update();          // Update position and animation frame
+    void blitLives();       // Function of drawing lives at screen
+    void setAnimation();    // Set explosion animation
+    bool isAnimation();     // Checking if the animation in progress
 };
 
 
@@ -45,8 +41,8 @@ public:
 class Bullet:public Entity
 {
 public:
-    Bullet(int PosX, int PosY);
-    bool isOver();
+    Bullet(int PosX, int PosY);  // Setting new bullet at need position
+    bool isOver();               // Checking if get over screen
 };
 
 
@@ -54,18 +50,15 @@ public:
 class Mob:public Entity
 {
 private:
-    float rot; float dRot;
-    Uint8 frame;
-    bool original;
+    float rot, dRot;      // Rotation state and speed of it changing
+    Uint8 frame;          // Frame counter of animation
 public:
-    Mob();
-    void blit();
-    void update();
-    void reset();
-    void setAnimation();
-    bool isOver();
-    bool isAnimation();
-    SDL_Rect getDest();
+    void reset();         // Spawning new asteroid with unique charachteristicks
+    void update();        // Update position and animation frame
+    bool isOver();        // Checking if get over screen
+    void blit();          // Function of drawing at screen
+    void setAnimation();  // Set explosion animation
+    bool isAnimation();   // Checking if the animation in progress
 };
 
 
@@ -73,9 +66,9 @@ public:
 class Pow:public Entity
 {
 private:
-    char type;
+    Uint8 type;              // Type of current powerup (from POW_types)
 public:
-    Pow(SDL_Rect position);
-    void activate();
-    bool isOver();
+    Pow(SDL_Rect position);  // Spawning new powerup, base on position
+    void activate();         // Activate ability of current powerup
+    bool isOver();           // Checking if get over screen
 };

@@ -1,93 +1,55 @@
-
 #include "include.hpp"
-#include "define.hpp"
 #include "structs.hpp"
-//#include "images.hpp"
 #include "dataLoader.hpp"
 
-#include "entity.hpp"
-
 // Base entity class
+// Base destination of drawing
 void Entity::blit(){
     SDL_RenderCopy(app.renderer, texture, NULL, &dest); 
 };
 
+// Base update and moving function
 void Entity::update(){
-    dest.x += speedx; dest.y += speedy;
+    dest.x += speedx; 
+    dest.y += speedy;
 };
 
 
 // Head class
+// Function of resseting poition and texture
 void Head::reset(){
+    // Resetting texture
     texture = Textures[IMG_player];
     SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
-    dest.h /= 2; dest.w /= 2;
-    speedx = 0; speedy = 0;
-    dest.x = SCREEN_WIDTH/2 - dest.w/2;  // Setting up standart position
+    dest.h /= 2; 
+    dest.w /= 2;
+    speedx = 0; 
+    speedy = 0;
+    // Setting up standart position
+    dest.x = SCREEN_WIDTH/2 - dest.w/2;  
     dest.y = GAME_HEIGHT - 80;
     frame = 0;
+    // Resseting ticks
     lastShootTicks = 0;
     lastBoostTicks = 0;
 };
 
-void Head::blit(){
-    SDL_RenderCopy(app.renderer, texture, NULL, &dest); 
-};
-
-void Head::blitLives(){
-    for(int i=0; i < lives; ++i){
-            SDL_Rect dest = { SCREEN_WIDTH-160+40*i, 5, 36, 27};
-	        SDL_RenderCopy(app.renderer, Textures[IMG_player], NULL, &dest); 
-        }
-};
-
+// Try move left
 void Head::moveLeft(){
     if(dx > -MOVE_SPEED) dx -= MOVE_SPEED;
 };
 
+// Try move right
 void Head::moveRight(){
     if(dx < MOVE_SPEED) dx += MOVE_SPEED;
 };
 
+// Try stopping movement
 void Head::stop(){
     dx = 0;
 };
 
-void Head::update(){
-    if(frame != 0){  // Playing animation of explosion
-        frame += 1;
-        if(frame % 5 == 0){
-            dest.x += dest.h/2; dest.y += dest.w/2;
-            texture = Textures[frame/5];
-            SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
-            dest.w/=2; dest.h/=2;
-            dest.x -= dest.h/2; dest.y -= dest.w/2;
-        }
-        if(frame/5 >= IMG_sonic_explosion7){
-            shield = MAX_SHIELD;
-            lives -= 1;
-            if(lives <= 0){
-                game_over = true;
-            }
-            reset();
-        }
-    }
-    else{  // Normal movement
-        dest.x += dx;
-        if(dest.x + dest.w > SCREEN_WIDTH){
-            dest.x=SCREEN_WIDTH-dest.w;
-            dx = 0;
-        }
-        if(dest.x < 0){
-            dest.x=0;
-            dx = 0;
-        }
-        if(lastShootTicks < D_SHOOT_TICKS){  // Adding tick to counter
-            lastShootTicks++;
-        }
-    }
-};
-
+// Try shoot bullet
 void Head::tryShoot(){
     if(&isAnimation && (lastShootTicks >= D_SHOOT_TICKS)){
         lastShootTicks = 0;
@@ -105,6 +67,55 @@ void Head::tryShoot(){
     }
 };
 
+// Update position and animation frame
+void Head::update(){
+    if(frame != 0){  
+        // Playing animation of explosion
+        frame += 1;
+        if(frame % 5 == 0){
+            dest.x += dest.h/2; 
+            dest.y += dest.w/2;
+            texture = Textures[frame/5];
+            SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
+            dest.w/=2; dest.h/=2;
+            dest.x -= dest.h/2; dest.y -= dest.w/2;
+        }
+        if(frame/5 >= IMG_sonic_explosion7){
+            // Exiting animation
+            shield = MAX_SHIELD;
+            lives -= 1;
+            if(lives <= 0){
+                game_over = true;
+            }
+            reset();
+        }
+    }
+    else{  
+        // Normal movement
+        dest.x += dx;
+        if(dest.x + dest.w > SCREEN_WIDTH){
+            dest.x=SCREEN_WIDTH-dest.w;
+            dx = 0;
+        }
+        if(dest.x < 0){
+            dest.x=0;
+            dx = 0;
+        }
+        if(lastShootTicks < D_SHOOT_TICKS){  // Adding tick to counter
+            lastShootTicks++;
+        }
+    }
+};
+
+// Function of drawing lives at screen
+void Head::blitLives(){
+    for(int i=0; i < lives; ++i){
+        SDL_Rect dest = { SCREEN_WIDTH-160+40*i, 5, 36, 27};
+        SDL_RenderCopy(app.renderer, Textures[IMG_player], NULL, &dest); 
+    }
+};
+
+// Set explosion animation
 void Head::setAnimation(){
     frame = IMG_sonic_explosion0*5;
     texture = Textures[ frame/5 ];
@@ -112,34 +123,42 @@ void Head::setAnimation(){
     dest.w/=2; dest.h/=2;
 }
 
+// Checking if the animation in progress
 bool Head::isAnimation(){
     return (frame == 0);
 };
 
 
 // Bullet class
-Bullet::Bullet(int PosX, int PosY){  //Spawning new object
+// Setting new bullet at need position
+Bullet::Bullet(int PosX, int PosY){
     speedx = 0; speedy = -LASER_SPEED;
     dest.x = PosX; dest.y = PosY;
     texture = Textures[IMG_laser];
     SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
 };
 
+// Checking if get over screen
 bool Bullet::isOver(){
     return dest.y < 0;
 };
 
 
 // Mob class
-Mob::Mob(){
-    texture = Textures[IMG_meteor0];
+// Spawning new asteroid with unique charachteristicks
+void Mob::reset(){
+    texture = Textures[IMG_meteor0 + rand() % METEOR_COUNT];
+    speedx = rand() % 6 - 3;
+    speedy = rand() % 7 + 1;
+    SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
+    dest.y = -dest.h - rand() % 80;
+    dest.x = rand() % (SCREEN_WIDTH - dest.w);
+    rot = (rand() % 20)/10;
+    dRot = (float)(rand() % 16)/10 - 8;
     frame = 0;
 };
 
-void Mob::blit(){
-    SDL_RenderCopyEx( app.renderer, texture, NULL, &dest, rot, NULL, SDL_FLIP_NONE );
-};
-
+// Update position and animation frame
 void Mob::update(){
     if(frame != 0){
         frame += 1;
@@ -159,18 +178,17 @@ void Mob::update(){
     }
 };
 
-void Mob::reset(){
-    texture = Textures[IMG_meteor0 + rand() % METEOR_COUNT];
-    speedx = rand() % 6 - 3;
-    speedy = rand() % 7 + 1;
-    SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
-    dest.y = -dest.h - rand() % 80;
-    dest.x = rand() % (SCREEN_WIDTH - dest.w);
-    rot = (rand() % 20)/10;
-    dRot = (float)(rand() % 16)/10 - 8;
-    frame = 0;
+// Checking if get over screen
+bool Mob::isOver(){
+    return (dest.y - dest.h > GAME_HEIGHT) || (dest.x > SCREEN_WIDTH) || (dest.x+dest.w < 0);
 };
 
+// Function of drawing at screen
+void Mob::blit(){
+    SDL_RenderCopyEx( app.renderer, texture, NULL, &dest, rot, NULL, SDL_FLIP_NONE );
+};
+
+// Set explosion animation
 void Mob::setAnimation(){
     rot = 0;
     frame = IMG_regular_explosion0*4;
@@ -179,21 +197,15 @@ void Mob::setAnimation(){
     dest.w/=2; dest.h/=2;
 };
 
-bool Mob::isOver(){
-    return (dest.y - dest.h > GAME_HEIGHT) || (dest.x > SCREEN_WIDTH) || (dest.x+dest.w < 0);
-};
-
+// Checking if the animation in progress
 bool Mob::isAnimation(){
     return (frame == 0);
 };
 
-SDL_Rect Mob::getDest(){
-    return dest;
-};
-
 
 // Powerup class
-Pow::Pow(SDL_Rect position){  //Spawning 
+// Spawning new powerup, base on position
+Pow::Pow(SDL_Rect position){
     speedx = 0; speedy = 2;
     dest = position; 
     dest.x += dest.w/2; dest.y += dest.h/2;
@@ -203,6 +215,7 @@ Pow::Pow(SDL_Rect position){  //Spawning
     dest.x -= dest.w/2; dest.y -= dest.h/2;
 };
 
+// Activate ability of current powerup
 void Pow::activate(){
     switch (type)
     {
@@ -210,6 +223,7 @@ void Pow::activate(){
         lastBoostTicks = D_POWERUP_TICKS;  // Setting ticks for boost
         Mix_PlayChannel(-1, Sounds[SND_bolt], 0);
         break;
+    
     case POW_shield:
         player.shield += rand() % 20 + 10;
         if(player.shield >= MAX_SHIELD){
@@ -217,11 +231,11 @@ void Pow::activate(){
         }
         Mix_PlayChannel(-1, Sounds[SND_shield], 0);
         break;
-    default:
-        break;
+
     }
 };
 
+// Checking if get over screen
 bool Pow::isOver(){
     return dest.y > GAME_HEIGHT;
 };

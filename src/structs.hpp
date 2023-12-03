@@ -10,23 +10,22 @@ struct App{
     SDL_Window *window;
 };
 
-struct FontData{
-    char* fontMem;  // Memory with font data
-    int size;  // Size of memory buffer
-};
+// Data for creating fonts
+extern Uint8* fontMemory;  // Memory with font data
+extern uint64_t fontSize;  // Size of memory buffer
 
 // Creating main varables
 extern App app;  // Global main render and window
-extern FontData fontData;  // Global data for creating fonts
 
-// All in-game textures
+// All textures
 extern SDL_Texture* Textures[IMG_count];  // Array of all textures
 
 // All animations
-extern IMG_Animation* Animations[ANIM_count];  // Array of all animations
+extern IMG_Animation* Animations[ANI_count];  // Array of all animations
 
 // All music trcks
 extern Mix_Music* Musics[MUS_count];  // Array of all music
+extern SDL_RWops* MusicsData[MUS_count];  // Array of data for music
 
 // All effects sounds
 extern Mix_Chunk* Sounds[SND_count];  // Array of all sound effects

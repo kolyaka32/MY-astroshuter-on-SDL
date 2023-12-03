@@ -14,18 +14,32 @@ enum{
 void setEnglishText();
 void setRussianText();
 
-// Pause menu
+// Pause menu with settings
 void pause();
 
+// First loaded menu and game start waiting screen
+void startMenu();
+
+// Types of numerated static texts
+enum TXT_types{
+    // Menu texts
+    TXT_MENU_SHMUP,
+    TXT_MENU_KEYS,
+    TXT_MENU_START,
+    // Menu extra texts about score
+    TXT_MENU_SCORE,
+    TXT_MENU_HIGH_SCORE,
+    // Pause texts
+    TXT_PAUSE_PAUSE,
+    TXT_PAUSE_MUSIC,
+    TXT_PAUSE_SOUND,
+
+    // Count of all texts
+    TXT_count
+};
+
 // Declaring static text
-extern staticText TXT_SHMUP;
-extern staticText TXT_KEYS;
-extern staticText TXT_START;
-extern staticText TXT_Pause;
-extern staticText TXT_Music;
-extern staticText TXT_Sound;
-extern staticText TXT_MenuHighScore;
-extern staticText TXT_MenuMaxScore;
+extern staticText texts[TXT_count];
 extern Animation Advertisment;
 
 // External values to save and load from settings file

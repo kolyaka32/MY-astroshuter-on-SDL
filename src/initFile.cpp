@@ -1,8 +1,5 @@
 #include "include.hpp"
-#include "define.hpp"
 #include "structs.hpp"
-
-#include "initFile.hpp"
 #include "pause.hpp"
 
 // Loading initialasing settings in game

@@ -1,16 +1,21 @@
 #pragma once
 
 // Extra modifications for game
-#define MEME_MOD true  // Activate meme include mode
-#define ADV_HIGHT 70
+#define MEME_MOD false  // Activate meme mode
 
 // System numbers
 #define WINDOWNAME "Astroshuter on SDL"
 #define SCREEN_WIDTH 480
 #define GAME_HEIGHT 600
-#define SCREEN_HEIGHT GAME_HEIGHT
+#define ADV_HIGHT 70
+#define SCREEN_HEIGHT GAME_HEIGHT + advertisingMode * ADV_HIGHT
 #define BASE_FPS 60
 #define UPDATE_FPS 50
+
+// Base game colors
+#define BLACK {0, 0, 0, 255}
+#define WHITE {255, 255, 255, 255}
+#define BACKGROUND_COLOR 0, 150, 0, 255
 
 // Balance options
 #define D_SHOOT_TICKS 12

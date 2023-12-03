@@ -6,7 +6,7 @@
 
 // Function of creating font
 TTF_Font* createFont(int size){
-    SDL_RWops* tempRW = SDL_RWFromMem(fontData.fontMem, fontData.size);
+    SDL_RWops* tempRW = SDL_RWFromMem(fontMemory, fontSize);
     return TTF_OpenFontRW(tempRW, 1, size);
 };
 
@@ -95,7 +95,7 @@ bool Button::in(int x, int y){
 
 
 // GIF animation play
-Animation::Animation( SDL_Rect destination, ANIM_types newType ){
+Animation::Animation( SDL_Rect destination, ANI_names newType ){
     // Creating animation
     type = newType;
     dest = destination;

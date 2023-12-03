@@ -18,9 +18,9 @@ TTF_Font* createFont(int size);
 class staticText
 {
 private:
-    TTF_Font* Font = NULL;
-    SDL_Surface *Surface = NULL;
-    SDL_Texture *Texture = NULL;
+    TTF_Font* Font;
+    SDL_Surface *Surface;
+    SDL_Texture *Texture;
     SDL_Rect Rect;
 public:
     void clear();
@@ -43,6 +43,7 @@ public:
     void draw(std::string text, const ALIGNMENT_types alignment, SDL_Color color = {255, 255, 255});
 };
 
+// Class of HUD slider for better choosen parameters
 class Slider{
 private:
     SDL_Texture *textureLine;
@@ -70,14 +71,13 @@ public:
 class Animation
 {
 private:
-    //IMG_Animation* anim;
     Uint8 type;
     SDL_Texture* texture;
     Uint32 frame;
-    uint32_t prevTick;
+    Uint64 prevTick;
     SDL_Rect dest;
 public:
-    Animation( SDL_Rect destination, ANIM_types newType );
+    Animation( SDL_Rect destination, ANI_names newType );
     void blit();
     void clear();
 };

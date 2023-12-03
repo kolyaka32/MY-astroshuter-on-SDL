@@ -4,27 +4,25 @@
 #include "define.hpp"
 #include "structs.hpp"
 
-class dataLoader
-{
-private:
-    SDL_RWops* dataFile;
-    void expectCorrection();  // Function of expecting correction of numbers
-    void loadIcone();  // Loading game icone
-    void loadImage();  // Loading all images
-    void loadAnimation();  // Loading all GIF-animations
-    void loadAudio();  // Loading all audio and music files
-    void loadFont();  // Loading fonts 
-public:
-    void init(std::string name);  // Function of initialasing and loading data file
-    void unload();
-};
+// Load file with all data
+void loadData(std::string fileName);
 
+// Function of clearing all temporary data, loaded from arcieve
+void unloadData();
+
+// Archive values
+#define PASSWORD NULL  // Archive password
+
+// Used numerated numbers
+#define ICO_count 1  // Number of icones for better count
+#define FNT_count 1  // Number of fonts for better count
 
 // Names of images in array to using
 enum IMG_names{
     // Interface
     IMG_background,  // Background image
     IMG_esc_button,
+
     // Pause interface
     IMG_slider_line,
     IMG_slider_button,
@@ -68,6 +66,7 @@ enum IMG_names{
     IMG_sonic_explosion5,
     IMG_sonic_explosion6,
     IMG_sonic_explosion7,
+    IMG_sonic_explosion8,
 
     // Final counter 
     IMG_count
@@ -100,10 +99,10 @@ enum SND_names{
 };
 
 // Names of animations in array to use
-enum ANIM_types{
-    ANIM_menu,  // Menu animation of maxwell cat
-    ANIM_adv,  // In game advertisment (of watermellon)
+enum ANI_names{
+    ANI_menu,  // Menu animation of maxwell cat
+    ANI_adv,  // In game advertisment (of watermellon)
 
     // Final counter
-    ANIM_count
+    ANI_count
 };

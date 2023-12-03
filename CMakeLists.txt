@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(base)  # Main game project
-project(dataCreater)  # Extra program, for compailing all data to one file
+project(Astroshuter)  # Main game project
 
 # Set source files
-add_executable( base
+add_executable( ${CMAKE_PROJECT_NAME}
     # Base includes and defines
     src/include.hpp
     src/define.hpp
@@ -36,38 +35,32 @@ add_executable( base
 
     # Main function
     src/main.cpp 
+
+    # File for adding game icone
+    src/set.rc
 )
 
-# Setting static dlls
 set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libgcc -static-libstdc++ -lwsock32 -lws2_32 -mwindows ${CMAKE_CSS_STANDARD_LIBRARIES}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive")
 
 # Including external libraries
-
 set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-
 # Finding place of external libraries
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_ttf REQUIRED)
-find_package(SDL2_mixer REQUIRED)
+# Including SDL-family
+find_package(SDL2 CONFIG REQUIRED)
+find_package(SDL2_image CONFIG REQUIRED)
+find_package(SDL2_ttf CONFIG REQUIRED)
+find_package(SDL2_mixer CONFIG REQUIRED)
+# Including libzip
+set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/share")
+find_package(libzip CONFIG REQUIRED)
 
-# libzib include
-set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lib/cmake")
-find_package(libzip REQUIRED)
+# Including external included directories
+include_directories(${SDL2_INCLUDE_DIRS})
 
-# Base project
-# Including external libraries
-target_include_directories( base
-    PUBLIC ${SDL2_INCLUDE_DIRS}
-    PUBLIC ${SDL2_image_INCLUDE_DIRS}
-    PUBLIC ${SDL2_ttf_config_path}
-    PUBLIC ${SDL2_mixer_config_path}
-    PUBLIC &{libzip_INCLUDE_DIRS}
-)
-
-target_link_libraries(base PUBLIC ${SDL2_LIBRARIES} SDL2_image::SDL2_image mingw32)
-target_link_libraries(base PUBLIC ${SDL2_LIBRARIES} SDL2_ttf::SDL2_ttf mingw32)
-target_link_libraries(base PUBLIC ${SDL2_LIBRARIES} SDL2_mixer::SDL2_mixer mingw32)
-target_link_libraries(base PUBLIC ${libzip_LIBRARIES} libzip::zip)
+# Including linked libraries
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES} SDL2_image::SDL2_image)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE SDL2_ttf::SDL2_ttf)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE SDL2_mixer::SDL2_mixer)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${libzip_LIBRARIES} libzip::zip)

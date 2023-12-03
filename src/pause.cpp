@@ -1,10 +1,9 @@
 #include "include.hpp"
 #include "define.hpp"
-#include "structs.hpp"
-
 #include "pause.hpp"
 
-enum{  // Types of selected box
+// Types of selected box
+enum{  
     NORMAL_BOX,
     MUSIC_SLIDER_BOX,
     EFFECT_SLIDER_BOX,
@@ -13,26 +12,26 @@ enum{  // Types of selected box
 } SELCTED_BOX_types;
 
 void setEnglishText(){
-    TXT_SHMUP.set("SHMUP!", 64, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT/5);
-    TXT_KEYS.set("Arrow keys move, Space to fire", 22, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*2/5);
-    TXT_START.set("Press any key to begin", 18, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*2/5+70);
-    TXT_Pause.set("Game on pause", 30, MIDLE_text, SCREEN_WIDTH/2, 20);
-    TXT_Music.set("Music", 22, MIDLE_text, SCREEN_WIDTH/2, 250);
-    TXT_Sound.set("Sounds", 22, MIDLE_text, SCREEN_WIDTH/2, 400);
-    TXT_MenuHighScore.set("Your last score: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
-    TXT_MenuMaxScore.set("Your max score: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
+    texts[TXT_MENU_SHMUP].set("SHMUP!", 64, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT/5);
+    texts[TXT_MENU_KEYS].set("Arrow keys move, Space to fire", 22, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*2/5);
+    texts[TXT_MENU_START].set("Press any key to begin", 18, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*2/5+70);
+    texts[TXT_PAUSE_PAUSE].set("Game on pause", 30, MIDLE_text, SCREEN_WIDTH/2, 20);
+    texts[TXT_PAUSE_MUSIC].set("Music", 22, MIDLE_text, SCREEN_WIDTH/2, 250);
+    texts[TXT_PAUSE_SOUND].set("Sounds", 22, MIDLE_text, SCREEN_WIDTH/2, 400);
+    texts[TXT_MENU_SCORE].set("Your last score: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
+    texts[TXT_MENU_HIGH_SCORE].set("Your max score: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
     SDL_SetWindowTitle(app.window, "Astroshuter on SDL");
 };
 
 void setRussianText(){
-    TXT_SHMUP.set("ШМАП!", 64, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT/5);
-    TXT_KEYS.set("Стрелки для движения, пробел для стрельбы", 22, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*2/5);
-    TXT_START.set("Нажмите любую кнопку для продолжения", 18, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*2/5+70);
-    TXT_Pause.set("Игра на паузе", 30, MIDLE_text, SCREEN_WIDTH/2, 20);
-    TXT_Music.set("Музыка", 22, MIDLE_text, SCREEN_WIDTH/2, 250);
-    TXT_Sound.set("Звук", 22, MIDLE_text, SCREEN_WIDTH/2, 400);
-    TXT_MenuHighScore.set("Ваш последний счёт: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
-    TXT_MenuMaxScore.set("Ваш максимальный счёт: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
+    texts[TXT_MENU_SHMUP].set("ШМАП!", 64, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT/5);
+    texts[TXT_MENU_KEYS].set("Стрелки для движения, пробел для стрельбы", 22, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*2/5);
+    texts[TXT_MENU_START].set("Нажмите любую кнопку для продолжения", 18, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*2/5+70);
+    texts[TXT_PAUSE_PAUSE].set("Игра на паузе", 30, MIDLE_text, SCREEN_WIDTH/2, 20);
+    texts[TXT_PAUSE_MUSIC].set("Музыка", 22, MIDLE_text, SCREEN_WIDTH/2, 250);
+    texts[TXT_PAUSE_SOUND].set("Звук", 22, MIDLE_text, SCREEN_WIDTH/2, 400);
+    texts[TXT_MENU_SCORE].set("Ваш последний счёт: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
+    texts[TXT_MENU_HIGH_SCORE].set("Ваш максимальный счёт: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
     SDL_SetWindowTitle(app.window, "Астрошутер на SDL");
 };
 
@@ -48,7 +47,7 @@ void pause(){
     bool waiting = true;
     bool MouseDown = false;
     char inBox = NORMAL_BOX;
-    Sint64 prevSND = SDL_GetTicks64();
+    Uint64 prevSND = SDL_GetTicks64();
     while(waiting){  // Starting loop for waiting for start
         while( SDL_PollEvent(&event) != 0 ){
             switch (event.type)
@@ -121,8 +120,12 @@ void pause(){
         }
 
         // Drawing
-        SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
-        TXT_Pause.draw();  TXT_Music.draw(); TXT_Sound.draw();  // Showing extra text
+        // Drawing background at screen
+        SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  
+        // Showing extra text
+        texts[TXT_PAUSE_PAUSE].draw();
+        texts[TXT_PAUSE_MUSIC].draw();
+        texts[TXT_PAUSE_SOUND].draw(); 
         MusicSlider.blit(MusicVolume*2);
         SoundSlider.blit(EffectsVolume*2);  // Drawing sliders
         BtnFlagUSA.blit();
@@ -134,3 +137,102 @@ void pause(){
         SDL_Delay(1000 / drawFPS);  // Delaying time to decrease CPU loading
     }
 };
+
+void startMenu(){
+    // Clearing all unnecesary information
+    BulletArray.clear();
+    PowArray.clear();
+    if(MaxScore < score){  // Updating max score
+        MaxScore = score;
+    }
+    
+    if(advertisingMode){
+        Mix_PlayMusic( Musics[MUS_menu], -1 );  // Infinite playing music
+    }
+
+    // HUD
+    Button esc(SCREEN_WIDTH - 24, 24, IMG_esc_button);
+    Animation MenuAdvertisment({96, SCREEN_HEIGHT-192, 288, 192}, ANI_menu);
+
+    // Setting text of score, on which language selected
+    switch (language)
+    {
+    case STANDART_LNG:
+    case ENGLISH_LNG:
+        texts[TXT_MENU_SCORE].set("Your last score: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
+        texts[TXT_MENU_HIGH_SCORE].set("Your max score: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
+        break;
+    
+    case RUSSIAN_LNG:
+        texts[TXT_MENU_SCORE].set("Ваш последний счёт: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
+        texts[TXT_MENU_HIGH_SCORE].set("Ваш максимальный счёт: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
+    }
+
+    // Starting loop for waiting for start
+    bool waiting = true;
+    SDL_Event event;
+    while(waiting && running){
+        while( SDL_PollEvent(&event) != 0 ){  // Getting events
+            switch (event.type)
+            {
+            case SDL_QUIT:
+                running = false;  // Exit from program
+                waiting = false;
+                break;
+            
+            case SDL_KEYDOWN:
+                if(event.key.keysym.sym == SDLK_ESCAPE){
+                    pause();  // Going to pause menu by escape button
+                }
+                else{
+                    waiting = false;
+                }
+                break;
+            
+            case SDL_MOUSEBUTTONDOWN:
+                int MouseX, MouseY;
+                SDL_GetMouseState(&MouseX, &MouseY);  // Getting mouse position
+                if(esc.in(MouseX, MouseY)){  // Clicking on escape button
+                    pause();
+                }
+            }
+        }
+        // Drawing
+        SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
+        texts[TXT_MENU_SHMUP].draw();
+        texts[TXT_MENU_KEYS].draw();
+        texts[TXT_MENU_START].draw();
+        if(score != 0){  // Drawing game and max score, if necesary
+            texts[TXT_MENU_SCORE].draw();
+            texts[TXT_MENU_HIGH_SCORE].draw();
+        }
+
+        esc.blit();
+        if(advertisingMode){
+            MenuAdvertisment.blit();
+        }
+        SDL_RenderPresent(app.renderer);
+
+        SDL_Delay( 1000/drawFPS );    // Delaying constant time between ticks to decrease CPU loading
+    }
+    // Clearing animations
+    if(advertisingMode){
+        MenuAdvertisment.clear();
+    }
+
+    // Resetting positions and speeds of all objects
+    player.reset();
+    player.lives = MAX_LIVES; 
+    player.shield = MAX_SHIELD;
+    MobArray.resize( START_NUM_ASTEROID);
+    for(int i=0; i< MobArray.size(); ++i){
+        MobArray[i].reset();
+    }
+
+    // Resetting values
+    game_over = false;
+    score = 0;
+    if(advertisingMode){
+        Mix_PlayMusic( Musics[MUS_main], -1 );  // Infinite playing music
+    }
+}

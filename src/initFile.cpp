@@ -5,7 +5,7 @@
 // Loading initialasing settings in game
 void loadInitFile(){
     // Reading file
-    std::ifstream in("settings.ini"); // Open file to read
+    std::ifstream in("settings1.ini"); // Open file to read
     std::string line;  // Output string line
 
     language = STANDART_LNG;
@@ -65,7 +65,7 @@ void setInitData(){
 
 // Saving initialasing file
 void saveInitFile(){
-    std::ofstream setting("settings.ini");  // Creating output file
+    std::ofstream setting("settings1.ini");  // Creating output file
 
     // Writing data to output
     switch (language)  // Writing language

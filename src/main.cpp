@@ -60,7 +60,7 @@ int main(int argv, char** args){
     createVideo();  // Creating video output system
     
     // Loading data from file
-    loadData("data.dat");
+    loadData("data1.dat");
 
     // Setting data from init file to program
     setInitData();  

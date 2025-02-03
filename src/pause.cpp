@@ -47,33 +47,33 @@ void pause(){
     bool waiting = true;
     bool MouseDown = false;
     char inBox = NORMAL_BOX;
-    Uint64 prevSND = SDL_GetTicks64();
+    Uint64 prevSND = SDL_GetTicks();
     while(waiting){  // Starting loop for waiting for start
         while( SDL_PollEvent(&event) != 0 ){
             switch (event.type)
             {
-            case SDL_QUIT:
+            case SDL_EVENT_QUIT:
                 running = false;  // Exit from program
                 waiting = false;
                 break;
 
-            case SDL_KEYDOWN:
-                if (event.key.keysym.sym == SDLK_ESCAPE){
+            case SDL_EVENT_KEY_DOWN:
+                if (event.key.key == SDLK_ESCAPE){
                     waiting = false;  // Returning to game
                 }
                 break;
 
-            case SDL_MOUSEBUTTONDOWN:
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
                 MouseDown = true;
                 break;
 
-            case SDL_MOUSEBUTTONUP:
+            case SDL_EVENT_MOUSE_BUTTON_UP:
                 MouseDown = false; 
                 inBox = NORMAL_BOX;
             }
         }
 
-        int MouseX, MouseY;
+        float MouseX, MouseY;
         SDL_GetMouseState(&MouseX, &MouseY);  // Getting mouse position
         if(MouseDown && inBox == NORMAL_BOX){
             if(MusicSlider.in(MouseX, MouseY)){
@@ -95,18 +95,18 @@ void pause(){
             MusicVolume = (MouseX - MusicSlider.getX()) / 2;
             if(MouseX - MusicSlider.getX() < 0) MusicVolume = 0;
             if(MouseX - MusicSlider.getX() > 255) MusicVolume = 255;
-            Mix_VolumeMusic(MusicVolume);  // Setting volume of music
+            //Mix_VolumeMusic(MusicVolume);  // Setting volume of music
             break;
         case EFFECT_SLIDER_BOX:  // If touch effects slider
             EffectsVolume = (MouseX - SoundSlider.getX()) / 2;
             if(MouseX - SoundSlider.getX() < 0) EffectsVolume = 0;
             if(MouseX - SoundSlider.getX() > 255) EffectsVolume = 255;
-            Mix_Volume(-1, EffectsVolume);  // Setting volume of effects
+            //Mix_Volume(-1, EffectsVolume);  // Setting volume of effects
             
             // Playing sound effect for understanding loud
-            if( SDL_GetTicks64() - prevSND > 200 ){
-                Mix_PlayChannel(-1, Sounds[SND_laser], 0);
-                prevSND = SDL_GetTicks64();
+            if( SDL_GetTicks() - prevSND > 200 ){
+                //Mix_PlayChannel(-1, Sounds[SND_laser], 0);
+                prevSND = SDL_GetTicks();
             }
             break;
         case ENGLISH_BOX:  // If touch english language box
@@ -121,7 +121,7 @@ void pause(){
 
         // Drawing
         // Drawing background at screen
-        SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  
+        SDL_RenderTexture(app.renderer, Textures[IMG_background], NULL, NULL);  
         // Showing extra text
         texts[TXT_PAUSE_PAUSE].draw();
         texts[TXT_PAUSE_MUSIC].draw();
@@ -147,12 +147,12 @@ void startMenu(){
     }
     
     if(advertisingMode){
-        Mix_PlayMusic( Musics[MUS_menu], -1 );  // Infinite playing music
+        //Mix_PlayMusic( Musics[MUS_menu], -1 );  // Infinite playing music
     }
 
     // HUD
     Button esc(SCREEN_WIDTH - 24, 24, IMG_esc_button);
-    Animation MenuAdvertisment({96, SCREEN_HEIGHT-192, 288, 192}, ANI_menu);
+    Animation MenuAdvertisment({96, float(SCREEN_HEIGHT-192), 288, 192}, ANI_menu);
 
     // Setting text of score, on which language selected
     switch (language)
@@ -175,13 +175,13 @@ void startMenu(){
         while( SDL_PollEvent(&event) != 0 ){  // Getting events
             switch (event.type)
             {
-            case SDL_QUIT:
+            case SDL_EVENT_QUIT:
                 running = false;  // Exit from program
                 waiting = false;
                 break;
             
-            case SDL_KEYDOWN:
-                if(event.key.keysym.sym == SDLK_ESCAPE){
+            case SDL_EVENT_KEY_DOWN:
+                if(event.key.key == SDLK_ESCAPE){
                     pause();  // Going to pause menu by escape button
                 }
                 else{
@@ -189,8 +189,8 @@ void startMenu(){
                 }
                 break;
             
-            case SDL_MOUSEBUTTONDOWN:
-                int MouseX, MouseY;
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                float MouseX, MouseY;
                 SDL_GetMouseState(&MouseX, &MouseY);  // Getting mouse position
                 if(esc.in(MouseX, MouseY)){  // Clicking on escape button
                     pause();
@@ -198,7 +198,7 @@ void startMenu(){
             }
         }
         // Drawing
-        SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
+        SDL_RenderTexture(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
         texts[TXT_MENU_SHMUP].draw();
         texts[TXT_MENU_KEYS].draw();
         texts[TXT_MENU_START].draw();
@@ -233,6 +233,6 @@ void startMenu(){
     game_over = false;
     score = 0;
     if(advertisingMode){
-        Mix_PlayMusic( Musics[MUS_main], -1 );  // Infinite playing music
+        //Mix_PlayMusic( Musics[MUS_main], -1 );  // Infinite playing music
     }
 }

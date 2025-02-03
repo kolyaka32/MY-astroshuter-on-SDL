@@ -30,7 +30,7 @@ zip_t* openarchive(std::string archiveName){
 };
 
 // Function of getting data of archive file
-static inline SDL_RWops* dataFromarchive(const char* name){
+static inline SDL_IOStream* dataFromarchive(const char* name){
     // Openning need file
     zip_file_t* file = zip_fopen_encrypted(archive, name, 0, PASSWORD);
     
@@ -46,7 +46,7 @@ static inline SDL_RWops* dataFromarchive(const char* name){
     zip_fread(file, buffer, st.size);
     zip_fclose(file);
     // Creating SDL-based structure with data
-    SDL_RWops* tempRW = SDL_RWFromMem(buffer, st.size);
+    SDL_IOStream* tempRW = SDL_IOFromConstMem(buffer, st.size);
 
     // Returning created data structure
     return tempRW;
@@ -56,26 +56,26 @@ static inline SDL_RWops* dataFromarchive(const char* name){
 // Function of loading game icone
 static unsigned loadIcone(const char* name){
     // Getting icone data
-    SDL_RWops* tempRW = dataFromarchive(name);
+    SDL_IOStream* tempRW = dataFromarchive(name);
 
     // Setting window icone
-    SDL_Surface* iconeImage = IMG_LoadICO_RW(tempRW);
+    SDL_Surface* iconeImage = IMG_LoadICO_IO(tempRW);
     if(iconeImage == NULL){  // Checking creating image
         return 0;  // Returning 0 as error with loading
     }
-    SDL_RWclose(tempRW);
+    SDL_CloseIO(tempRW);
     SDL_SetWindowIcon(app.window, iconeImage);
-    SDL_FreeSurface(iconeImage);
+    SDL_DestroySurface(iconeImage);
     return ICO_count;  // Returning correction of loading
 };
 
 // Functions of loading selected image file
 static void loadPicture(const char* name, IMG_names number){
     // Getting selected picture data
-    SDL_RWops* tempRW = dataFromarchive(name);
+    SDL_IOStream* tempRW = dataFromarchive(name);
     // Creating texture from data
-    Textures[number] = SDL_CreateTextureFromSurface(app.renderer, IMG_LoadPNG_RW(tempRW));
-    SDL_RWclose(tempRW);
+    Textures[number] = SDL_CreateTextureFromSurface(app.renderer, IMG_LoadPNG_IO(tempRW));
+    SDL_CloseIO(tempRW);
 
     // Checking correction of loaded file
     if(Textures[number] != NULL){
@@ -86,10 +86,10 @@ static void loadPicture(const char* name, IMG_names number){
 // Function of loading selected GIF animation
 static void loadAnimation(const char* name, ANI_names number){
     // Getting selected animation data
-    SDL_RWops* tempRW = dataFromarchive(name);
+    SDL_IOStream* tempRW = dataFromarchive(name);
     // Creating animation from data
-    Animations[number] = IMG_LoadAnimation_RW(tempRW, 0);
-    SDL_RWclose(tempRW);
+    Animations[number] = IMG_LoadAnimation_IO(tempRW, 0);
+    SDL_CloseIO(tempRW);
 
     // Checking correction of loaded file
     if(Animations[number] != NULL){
@@ -100,20 +100,20 @@ static void loadAnimation(const char* name, ANI_names number){
 // Function of loading selected music file
 static void loadMusic(const char* name, MUS_names number){
     // Getting selected music track data
-    MusicsData[number] = dataFromarchive(name);
+    //MusicsData[number] = dataFromarchive(name);
     // Creating music track from data
-    Musics[number] = Mix_LoadMUS_RW(MusicsData[number], 0);
+    //Musics[number] = Mix_LoadMUS_IO(MusicsData[number], 0);
 
     // Checking correction of loaded file
-    if(Musics[number] != NULL){
+    /*if(Musics[number] != NULL){
         loadedMusics++;
-    };
+    };*/
 };
 
 // Function of loading selected sound
 static void loadSound(const char* name, SND_names number){
     // Getting selected sound data
-    SDL_RWops* tempRW = dataFromarchive(name);
+    /*SDL_RWops* tempRW = dataFromarchive(name);
     // Creating sound from data
     Sounds[number] = Mix_LoadWAV_RW(tempRW, 0);
     SDL_RWclose(tempRW);
@@ -121,7 +121,7 @@ static void loadSound(const char* name, SND_names number){
     // Checking correction of loaded file
     if(Sounds[number] != NULL){
         loadedSounds++;
-    };
+    };*/
 };
 
 // Function of loading font
@@ -249,14 +249,14 @@ void loadData(std::string fileName){
         printf("Wrong count of animations");
         exit(ERR_FIL_ANI);
     }
-    if(loadAllMusic() != MUS_count){
+    /*if(loadAllMusic() != MUS_count){
         printf("Wrong count of music");
         exit(ERR_FIL_MUS);
     }
     if(loadAllSounds() != SND_count){
         printf("Wrong count of sounds");
         exit(ERR_FIL_SND);
-    }
+    }*/
     if(loadFont("fnt/Arial.ttf") != FNT_count){
         printf("Can't load font");
         exit(ERR_FIL_FNT);
@@ -273,14 +273,14 @@ void unloadData(){
     // Deliting font data
     free(fontMemory);
     // Unloading sound effects
-    for(int i=0; i < SND_count; ++i){
+    /*for(int i=0; i < SND_count; ++i){
         Mix_FreeChunk(Sounds[i]);
-    }
+    }*/
     // Unloading music effects and data
-    for(int i=0; i < MUS_count; ++i){
+    /*for(int i=0; i < MUS_count; ++i){
         Mix_FreeMusic(Musics[i]);
         SDL_RWclose(MusicsData[i]);
-    }
+    }*/
     // Unloading gif animations
     for(int i=0; i < ANI_count; ++i){
         IMG_FreeAnimation(Animations[i]);

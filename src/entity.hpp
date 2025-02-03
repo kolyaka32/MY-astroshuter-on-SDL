@@ -9,7 +9,7 @@ protected:
     int speedx, speedy;    // Speeds (or deltas) - movement per tick
     SDL_Texture *texture;  // Poiter to texture of sprite
 public:
-    SDL_Rect dest;         // Base destination of drawing
+    SDL_FRect dest;         // Base destination of drawing
     void blit();           // Base drawing function
     void update();         // Base update and moving function
 };
@@ -68,7 +68,7 @@ class Pow:public Entity
 private:
     Uint8 type;              // Type of current powerup (from POW_types)
 public:
-    Pow(SDL_Rect position);  // Spawning new powerup, base on position
+    Pow(SDL_FRect position);  // Spawning new powerup, base on position
     void activate();         // Activate ability of current powerup
     bool isOver();           // Checking if get over screen
 };

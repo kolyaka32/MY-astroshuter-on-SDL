@@ -10,6 +10,8 @@
 #include "initFile.hpp"
 #include "entity.hpp"
 
+#include "SDL3/SDL_main.h"
+
 App app;  // Creating main varables
 
 // Data for creating fonts
@@ -37,9 +39,9 @@ bool advertisingMode;   // Mode of showing 'advertisment'
 // Texts variables and constants
 SDL_Texture* Textures[IMG_count];      // Array of all textures
 IMG_Animation* Animations[ANI_count];  // Array of all animations
-Mix_Music* Musics[MUS_count];          // Array of all music
-SDL_RWops* MusicsData[MUS_count];      // Array of data for music
-Mix_Chunk* Sounds[SND_count];          // Array of all sound effects
+//Mix_Music* Musics[MUS_count];          // Array of all music
+//SDL_RWops* MusicsData[MUS_count];      // Array of data for music
+//Mix_Chunk* Sounds[SND_count];          // Array of all sound effects
 
 // Global statick texts
 staticText texts[TXT_count];
@@ -71,9 +73,9 @@ int main(int argv, char** args){
     Bar ShieldBar({20, 5, MAX_SHIELD, 10}, {0, 255, 0, 255}, IMG_shield);  // Shield/health bar
     Bar BoostBar({20, 20, 100, 10}, {0, 0, 255, 255}, IMG_bolt);  // Bar of the remaining boost time
 
-    if(!advertisingMode){
+    /*if(!advertisingMode){
         Mix_PlayMusic( Musics[MUS_main], -1 );  // Infinite playing music without advertisment
-    }
+    }*/
 
     // Cycle variables
     SDL_Event event;
@@ -90,21 +92,21 @@ int main(int argv, char** args){
         // Getting events
         while( SDL_PollEvent(&event) != 0 ){  
             switch (event.type){
-            case SDL_QUIT:
+            case SDL_EVENT_QUIT:
                 running = false;  // Exit from program
                 break;
 
-            case SDL_KEYDOWN:
+            case SDL_EVENT_KEY_DOWN:
                 // Resseting field and next new generation
-                switch (event.key.keysym.sym)
+                switch (event.key.key)
                 {
                 case SDLK_LEFT:
-                case SDLK_a:
+                case SDLK_A:
                     player.moveLeft();
                     break;
 
                 case SDLK_RIGHT:
-                case SDLK_d:
+                case SDLK_D:
                     player.moveRight();
                     break;
 
@@ -112,7 +114,7 @@ int main(int argv, char** args){
                     Shooting = true;
                     break;
                 
-                case SDLK_r:
+                case SDLK_R:
                     game_over = true;
                     break;
                 
@@ -121,13 +123,13 @@ int main(int argv, char** args){
                 }
                 break;
             
-            case SDL_KEYUP:
-                switch (event.key.keysym.sym)
+            case SDL_EVENT_KEY_UP:
+                switch (event.key.key)
                 {
                 case SDLK_LEFT:
-                case SDLK_a:
+                case SDLK_A:
                 case SDLK_RIGHT:
-                case SDLK_d:
+                case SDLK_D:
                     player.stop();
                     break;
 
@@ -136,8 +138,8 @@ int main(int argv, char** args){
                 }
                 break;
             
-            case SDL_MOUSEBUTTONDOWN:
-                int MouseX, MouseY;
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                float MouseX, MouseY;
                 SDL_GetMouseState(&MouseX, &MouseY);  // Getting mouse position
                 if(esc.in(MouseX, MouseY)){  // Checking clicking on escape button
                     pause();
@@ -148,7 +150,7 @@ int main(int argv, char** args){
         if(!running) break;  // Breaking main cycle, if necesary
         
         // Objects update
-        if( ((SDL_GetTicks64() - oldMoveTime) > 1000 / UPDATE_FPS) ){  // Updating all objects once per need time
+        if( ((SDL_GetTicks() - oldMoveTime) > 1000 / UPDATE_FPS) ){  // Updating all objects once per need time
             // Moving all objects
             player.update();
             if(Shooting){
@@ -185,7 +187,7 @@ int main(int argv, char** args){
             // Collsions of the objects
             for(int i=0; i < BulletArray.size(); ++i){  // Getting collisons of bullets and asteroids
                 for(int j=0; j < MobArray.size(); ++j){  // year, n^2, not optimal
-                    if((MobArray[j].isAnimation()) && (SDL_HasIntersection(&BulletArray[i].dest, &MobArray[j].dest))){
+                    if((MobArray[j].isAnimation()) && (SDL_HasRectIntersectionFloat(&BulletArray[i].dest, &MobArray[j].dest))){
                         // Explosion of meteor
                         score += MobArray[j].dest.w;  // Increasing global score
                         // Adding meteor for increassing difficulty
@@ -195,7 +197,7 @@ int main(int argv, char** args){
                         }
                         BulletArray.erase(BulletArray.begin()+i);  // Deliting bullet
                         i--;
-                        Mix_PlayChannel(-1, Sounds[SND_regExplosion], 0);  // Sound of explosion
+                        //Mix_PlayChannel(-1, Sounds[SND_regExplosion], 0);  // Sound of explosion
                         MobArray[j].setAnimation();
                         if(rand() % 10 == 0){  // Random creating of power-up
                             Pow newPow(MobArray[j].dest);
@@ -208,7 +210,7 @@ int main(int argv, char** args){
             if(player.isAnimation()){
                 // Collisons of ship and asteroids
                 for(int i=0; i<MobArray.size(); ++i){
-                    if(MobArray[i].isAnimation() && SDL_HasIntersection(&player.dest, &MobArray[i].dest)){
+                    if(MobArray[i].isAnimation() && SDL_HasRectIntersectionFloat(&player.dest, &MobArray[i].dest)){
                         if(player.shield <= MobArray[i].dest.w / 2){
                             Shooting = false;
                             player.setAnimation();  // Playing animation of explosion ship
@@ -217,13 +219,13 @@ int main(int argv, char** args){
                         else{
                             player.shield -= MobArray[i].dest.w / 2;
                         }
-                        Mix_PlayChannel(-1, Sounds[SND_sonicExplosion], 0);  // Playing sound of explosion of ship
+                        //Mix_PlayChannel(-1, Sounds[SND_sonicExplosion], 0);  // Playing sound of explosion of ship
                         MobArray[i].setAnimation();  // Playing animation of explosion meteor
                     }
                 }
                 // Collision of ship and power-ups
                 for(int i=0; i<PowArray.size(); ++i){
-                    if(SDL_HasIntersection(&player.dest, &PowArray[i].dest)){
+                    if(SDL_HasRectIntersectionFloat(&player.dest, &PowArray[i].dest)){
                         PowArray[i].activate();
                         PowArray.erase(PowArray.begin()+i);  // Deleting power ups, if collide with player
                         i--;
@@ -233,12 +235,12 @@ int main(int argv, char** args){
             if(lastBoostTicks != 0){
                 lastBoostTicks--;
             }
-            oldMoveTime = SDL_GetTicks64();
+            oldMoveTime = SDL_GetTicks();
         }
 
         // Drawing all at screen
-        if(SDL_GetTicks64() - oldDrawTime > 1000 / drawFPS){  // Checking, if drawing need
-            SDL_RenderCopy(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
+        if(SDL_GetTicks() - oldDrawTime > 1000 / drawFPS){  // Checking, if drawing need
+            SDL_RenderTexture(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
 
             player.blit();  // Drawing player at screen
             for(int i=0; i<BulletArray.size(); ++i){  // Drawing all bullets at screen
@@ -266,12 +268,12 @@ int main(int argv, char** args){
             
             SDL_RenderPresent(app.renderer);  // Blitting all objects on screen
 
-            oldDrawTime = SDL_GetTicks64();  // Getting last update time
+            oldDrawTime = SDL_GetTicks();  // Getting last update time
         };
 
         // Waiting until next moving or drawing
-        Sint64 MoveSleep = ((SDL_GetTicks64() - oldMoveTime) - 1000/UPDATE_FPS);
-        Sint64 DrawSleep = ((SDL_GetTicks64() - oldDrawTime) - 1000/drawFPS);
+        Sint64 MoveSleep = ((SDL_GetTicks() - oldMoveTime) - 1000/UPDATE_FPS);
+        Sint64 DrawSleep = ((SDL_GetTicks() - oldDrawTime) - 1000/drawFPS);
         SDL_Delay( MAX(MIN( MoveSleep, DrawSleep ), 0) );
 	}
     // Exiting program

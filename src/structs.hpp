@@ -8,6 +8,7 @@
 struct App{
     SDL_Renderer *renderer;
     SDL_Window *window;
+    SDL_AudioDeviceID* stream;
 };
 
 // Data for creating fonts
@@ -24,11 +25,11 @@ extern SDL_Texture* Textures[IMG_count];  // Array of all textures
 extern IMG_Animation* Animations[ANI_count];  // Array of all animations
 
 // All music trcks
-extern Mix_Music* Musics[MUS_count];  // Array of all music
-extern SDL_RWops* MusicsData[MUS_count];  // Array of data for music
+//extern Mix_Music* Musics[MUS_count];  // Array of all music
+//extern SDL_RWops* MusicsData[MUS_count];  // Array of data for music
 
 // All effects sounds
-extern Mix_Chunk* Sounds[SND_count];  // Array of all sound effects
+//extern Mix_Chunk* Sounds[SND_count];  // Array of all sound effects
 
 // Flags of running
 extern bool running;  // Flag of main cycle work

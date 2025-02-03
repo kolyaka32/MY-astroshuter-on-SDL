@@ -9,8 +9,8 @@ void loadInitFile(){
     std::string line;  // Output string line
 
     language = STANDART_LNG;
-    MusicVolume = MIX_MAX_VOLUME/2;
-    EffectsVolume = MIX_MAX_VOLUME/2;
+    MusicVolume = 128;
+    EffectsVolume = 128;
     MaxScore = 0;
     drawFPS = BASE_FPS;
     advertisingMode = true;
@@ -59,8 +59,8 @@ void setInitData(){
         break;
     }
     // Setting volumes of sounds
-    Mix_VolumeMusic(MusicVolume);  // Setting volume of music
-    Mix_Volume(-1, EffectsVolume);  // Setting volume of effects
+    //Mix_VolumeMusic(MusicVolume);  // Setting volume of music
+    //Mix_Volume(-1, EffectsVolume);  // Setting volume of effects
 }
 
 // Saving initialasing file

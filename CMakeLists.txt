@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10.0)
 # Setting minimal c++ version for work
 set(CMAKE_CXX_STANDARD 14)
 
-project(Tic-tac-toe)  # Main project
+project(Astroshuter)  # Main project
 
 # Add all source files (that needed) under the src directory
 file(GLOB_RECURSE SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/*.cpp" "src/*.rc")

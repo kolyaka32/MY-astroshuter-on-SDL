@@ -17,9 +17,9 @@ static Uint8 loadedMusics;
 static Uint8 loadedSounds;
 
 // Function of open archive and setting base password
-zip_t* openarchive(std::string archiveName){
+zip_t* openarchive(const char* archiveName) {
     // Open archive with need name
-    archive = zip_open(archiveName.std::string::c_str(), ZIP_RDONLY, NULL);
+    archive = zip_open(archiveName, ZIP_RDONLY, NULL);
 
     #if PASSWORD
     zip_set_default_password(archive, PASSWORD);
@@ -30,19 +30,19 @@ zip_t* openarchive(std::string archiveName){
 };
 
 // Function of getting data of archive file
-static inline SDL_IOStream* dataFromarchive(const char* name){
+static inline SDL_IOStream* dataFromarchive(const char* name) {
     // Openning need file
     zip_file_t* file = zip_fopen_encrypted(archive, name, 0, PASSWORD);
     
     zip_stat_t st;
-	zip_stat(archive, name, 0, &st);  // Getting data of current file
+	zip_stat(archive, name, 0, &st);  // Getting parameters of current file
     // Checking correction of file
-    if(st.size == 0){  
+    if (st.size == 0) {  
         return NULL;
     }
 
     // Copping data to buffer
-    char* buffer = (char*)malloc(sizeof(char*)*st.size);
+    char* buffer = new char[st.size];
     zip_fread(file, buffer, st.size);
     zip_fclose(file);
     // Creating SDL-based structure with data
@@ -54,13 +54,13 @@ static inline SDL_IOStream* dataFromarchive(const char* name){
 
 // Functions of loading objects
 // Function of loading game icone
-static unsigned loadIcone(const char* name){
+static unsigned loadIcone(const char* name) {
     // Getting icone data
     SDL_IOStream* tempRW = dataFromarchive(name);
 
     // Setting window icone
     SDL_Surface* iconeImage = IMG_LoadICO_IO(tempRW);
-    if(iconeImage == NULL){  // Checking creating image
+    if (iconeImage == NULL) {  // Checking creating image
         return 0;  // Returning 0 as error with loading
     }
     SDL_CloseIO(tempRW);
@@ -70,21 +70,20 @@ static unsigned loadIcone(const char* name){
 };
 
 // Functions of loading selected image file
-static void loadPicture(const char* name, IMG_names number){
+static void loadPicture(const char* name, IMG_names number) {
     // Getting selected picture data
     SDL_IOStream* tempRW = dataFromarchive(name);
     // Creating texture from data
-    Textures[number] = SDL_CreateTextureFromSurface(app.renderer, IMG_LoadPNG_IO(tempRW));
-    SDL_CloseIO(tempRW);
+    Textures[number] = IMG_LoadTexture_IO(app.renderer, tempRW, true);
 
     // Checking correction of loaded file
-    if(Textures[number] != NULL){
+    if (Textures[number] != NULL) {
         loadedImages++;
     };
 };
 
 // Function of loading selected GIF animation
-static void loadAnimation(const char* name, ANI_names number){
+static void loadAnimation(const char* name, ANI_names number) {
     // Getting selected animation data
     SDL_IOStream* tempRW = dataFromarchive(name);
     // Creating animation from data
@@ -92,52 +91,68 @@ static void loadAnimation(const char* name, ANI_names number){
     SDL_CloseIO(tempRW);
 
     // Checking correction of loaded file
-    if(Animations[number] != NULL){
+    if (Animations[number] != NULL) {
         loadedAnimations++;
     };
 };
 
 // Function of loading selected music file
-static void loadMusic(const char* name, MUS_names number){
+static void loadMusic(const char* name, MUS_names number) {
     // Getting selected music track data
     //MusicsData[number] = dataFromarchive(name);
     // Creating music track from data
     //Musics[number] = Mix_LoadMUS_IO(MusicsData[number], 0);
 
     // Checking correction of loaded file
-    /*if(Musics[number] != NULL){
+    /*if (Musics[number] != NULL) {
         loadedMusics++;
     };*/
 };
 
 // Function of loading selected sound
-static void loadSound(const char* name, SND_names number){
+static void loadSound(const char* name, SND_names number) {
     // Getting selected sound data
-    /*SDL_RWops* tempRW = dataFromarchive(name);
-    // Creating sound from data
-    Sounds[number] = Mix_LoadWAV_RW(tempRW, 0);
-    SDL_RWclose(tempRW);
+    SDL_IOStream* tempRW = dataFromarchive(name);
 
-    // Checking correction of loaded file
-    if(Sounds[number] != NULL){
-        loadedSounds++;
-    };*/
+
+    SDL_AudioSpec spec;
+
+    /* Load the .wav files from wherever the app is being run from. */
+    if (!SDL_LoadWAV_IO(tempRW, true, &spec, &Sounds[number].wav_data, &Sounds[number].wav_data_len)) {
+        SDL_Log("Couldn't load .wav file: %s", SDL_GetError());
+        return;
+    }
+
+    /* Create an audio stream. Set the source format to the wav's format (what
+       we'll input), leave the dest format NULL here (it'll change to what the
+       device wants once we bind it). */
+    Sounds[number].stream = SDL_CreateAudioStream(&spec, NULL);
+    if (!Sounds[number].stream) {
+        SDL_Log("Couldn't create audio stream: %s", SDL_GetError());
+        return;
+    } 
+    if (!SDL_BindAudioStream(app.stream, Sounds[number].stream)) {  /* once bound, it'll start playing when there is data available! */
+        SDL_Log("Failed to bind '%s' stream to device: %s", name, SDL_GetError());
+        return;
+    }
+
+    loadedSounds++;
 };
 
 // Function of loading font
-static unsigned loadFont(const char* name){
+static unsigned loadFont(const char* name) {
     // Openning font file
     zip_file_t* file = zip_fopen_encrypted(archive, name, 0, PASSWORD);
     
     zip_stat_t st;
 	zip_stat(archive, name, 0, &st);  // Getting data from file
     // Checking correction of file
-    if(st.size == 0){  
+    if (st.size == 0) {  
         return 0;
     }
 
     // Copping data to buffer
-    fontMemory = (Uint8*)malloc(sizeof(Uint8*) * st.size);
+    fontMemory = new Uint8[st.size];
     fontSize = st.size;
     zip_fread(file, fontMemory, st.size);
     zip_fclose(file);
@@ -148,7 +163,7 @@ static unsigned loadFont(const char* name){
 
 // Functions of loading objects from lists
 // Loading all images
-static unsigned loadAllImages(){
+static unsigned loadAllImages() {
     loadedImages = 0;  // Resseting counter
     //loadPicture("img/.png", IMG_);
 
@@ -193,7 +208,7 @@ static unsigned loadAllImages(){
 };
 
 // Loading all animations
-static unsigned loadAllAnimations(){
+static unsigned loadAllAnimations() {
     loadedAnimations = 0;  // Resseting counter
     //loadAnimation("ani/.gif", ANI_);
     loadAnimation("ani/ADV1.gif", ANI_menu);
@@ -204,7 +219,7 @@ static unsigned loadAllAnimations(){
 };
 
 // Loading all music tracks
-static unsigned loadAllMusic(){
+static unsigned loadAllMusic() {
     loadedMusics = 0;  // Resseting counter
     //loadMusic("mus/.mp3", MUS_);
     loadMusic("mus/mainTheme.mp3", MUS_main);
@@ -215,7 +230,7 @@ static unsigned loadAllMusic(){
 };
 
 // Loading all sounds
-static unsigned loadAllSounds(){
+static unsigned loadAllSounds() {
     loadedSounds = 0;  // Resseting counter
     //loadSound("snd/.wav", SND_);
 
@@ -229,36 +244,36 @@ static unsigned loadAllSounds(){
     return loadedSounds;
 };
 
-void loadData(std::string fileName){
+void loadData(const char* fileName) {
     // Opening archive
-    if(openarchive(fileName) == NULL){
-        printf("Can't load arcieve");
+    if (openarchive(fileName) == NULL) {
+        SDL_Log("Can't load archieve: %s", SDL_GetError());
         exit(ERR_FIL_OPN);
     }  
 
     // Loading data from archive
-    if(loadIcone("img/Game.ico") != ICO_count){
-        printf("Can't load game icone");
+    if (loadIcone("img/Game.ico") != ICO_count) {
+        printf("Can't load game icone: %s", SDL_GetError());
         exit(ERR_FIL_ICO);
     }
-    if(loadAllImages() != IMG_count){
-        printf("Wrong count of images");
+    if (loadAllImages() != IMG_count) {
+        printf("Wrong count of images: %s", SDL_GetError());
         exit(ERR_FIL_IMG);
     }
-    if(loadAllAnimations() != ANI_count){
-        printf("Wrong count of animations");
+    if (loadAllAnimations() != ANI_count) {
+        printf("Wrong count of animations: %s", SDL_GetError());
         exit(ERR_FIL_ANI);
     }
-    /*if(loadAllMusic() != MUS_count){
-        printf("Wrong count of music");
+    /*if (loadAllMusic() != MUS_count) {
+        printf("Wrong count of music: %s", SDL_GetError());
         exit(ERR_FIL_MUS);
-    }
-    if(loadAllSounds() != SND_count){
-        printf("Wrong count of sounds");
-        exit(ERR_FIL_SND);
     }*/
-    if(loadFont("fnt/Arial.ttf") != FNT_count){
-        printf("Can't load font");
+    if (loadAllSounds() != SND_count) {
+        printf("Wrong count of sounds: %s", SDL_GetError());
+        exit(ERR_FIL_SND);
+    }
+    if (loadFont("fnt/Arial.ttf") != FNT_count) {
+        printf("Can't load font: %s", SDL_GetError());
         exit(ERR_FIL_FNT);
     }
 
@@ -267,26 +282,27 @@ void loadData(std::string fileName){
 }
 
 // Function of clearing all temporary data, loaded from arcieve
-void unloadData(){
+void unloadData() {
     // Unloading data in reverce form from loading
 
     // Deliting font data
     free(fontMemory);
     // Unloading sound effects
-    /*for(int i=0; i < SND_count; ++i){
-        Mix_FreeChunk(Sounds[i]);
-    }*/
+    for(int i=0; i < SND_count; ++i) {
+        SDL_PutAudioStreamData(Sounds[i].stream, Sounds[i].wav_data, (int) Sounds[i].wav_data_len);
+        SDL_free(Sounds[i].wav_data);
+    }
     // Unloading music effects and data
-    /*for(int i=0; i < MUS_count; ++i){
+    /*for(int i=0; i < MUS_count; ++i) {
         Mix_FreeMusic(Musics[i]);
         SDL_RWclose(MusicsData[i]);
     }*/
     // Unloading gif animations
-    for(int i=0; i < ANI_count; ++i){
+    for(int i=0; i < ANI_count; ++i) {
         IMG_FreeAnimation(Animations[i]);
     }
     // Unloading images
-    for(int i = 0; i < IMG_count; ++i){
+    for(int i = 0; i < IMG_count; ++i) {
         SDL_DestroyTexture(Textures[i]);
         Textures[i] = NULL;
     }

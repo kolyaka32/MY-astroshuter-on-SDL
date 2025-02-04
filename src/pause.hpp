@@ -44,8 +44,8 @@ extern Animation Advertisment;
 
 // External values to save and load from settings file
 extern Uint8 language;  // Language settings
-extern Uint8 MusicVolume;  // Start volume of music
-extern Uint8 EffectsVolume;  // Start volume of effects
+extern float MusicVolume;  // Start volume of music
+extern float EffectsVolume;  // Start volume of effects
 extern Uint32 score;  // Current player score
 extern Uint32 MaxScore;  // Maximal player score
 extern Uint16 drawFPS;  // Setted frames per seconds

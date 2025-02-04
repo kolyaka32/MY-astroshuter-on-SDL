@@ -7,6 +7,9 @@ set(CMAKE_CXX_STANDARD 14)
 # Creating project
 project(Astroshuter)
 
+# Hidding console
+set(CMAKE_CXX_FLAGS "-mwindows")
+
 # Setting prefix path for finding library
 set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
@@ -15,7 +18,7 @@ file(GLOB_RECURSE SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/*.cpp" "src/*.rc")
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Look for a SDL3 package
-find_package(SDL3 REQUIRED SDL3-shared)
+find_package(SDL3 REQUIRED)
 find_package(SDL3_image REQUIRED)
 find_package(SDL3_ttf REQUIRED)
 find_package(libzip CONFIG REQUIRED)

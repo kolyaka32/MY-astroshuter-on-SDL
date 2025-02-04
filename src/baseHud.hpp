@@ -18,13 +18,13 @@ TTF_Font* createFont(float size);
 class staticText
 {
 private:
-    TTF_Font* font;
-    SDL_Surface *surface;
-    SDL_Texture *texture;
-    SDL_FRect rect;
+    TTF_Font* font = nullptr;
+    SDL_Surface *surface = nullptr;
+    SDL_Texture *texture = nullptr;
+    SDL_FRect rect = {0, 0, 0, 0};
 public:
     void clear();
-    void set(std::string text, int size, ALIGNMENT_types alignment, int x, int y, SDL_Color color = {255, 255, 255});
+    void set(const std::string& text, int size, ALIGNMENT_types alignment, int x, int y, SDL_Color color = {255, 255, 255});
     void draw();
 };
 
@@ -32,11 +32,10 @@ public:
 class dinamicText
 {
 private:
-    TTF_Font* font;
-    SDL_Surface *surface;
-    SDL_Texture *texture;
+    TTF_Font* font = nullptr;
+    SDL_Texture *texture = nullptr;
     SDL_FRect rect;
-    int X;
+    int x;
 public:
     dinamicText(int size, int x, int y);
     void clear();
@@ -46,13 +45,13 @@ public:
 // Class of HUD slider for better choosen parameters
 class Slider{
 private:
-    SDL_Texture *textureLine;
-    SDL_Texture *textureButton;
+    SDL_Texture *textureLine = nullptr;
+    SDL_Texture *textureButton = nullptr;
     SDL_FRect rectLine;
     SDL_FRect rectButton;
 public:
     Slider(int y);
-    void blit(Uint8 state);
+    void blit(int state);
     bool in(float x, float y);
     int getX();
 };
@@ -71,11 +70,11 @@ public:
 class Animation
 {
 private:
-    Uint8 type;
-    SDL_Texture* texture;
+    const Uint8 type;
+    SDL_Texture* texture = nullptr;
     Uint32 frame;
     Uint64 prevTick;
-    SDL_FRect dest;
+    const SDL_FRect dest;
 public:
     Animation(SDL_FRect destination, ANI_names newType);
     void blit();
@@ -87,10 +86,10 @@ class Bar
 private:
     SDL_FRect rectBack;
     SDL_FRect rectFront;
-    SDL_FRect iconeRect;
-    SDL_Texture* iconeTexture;
-    SDL_Color color;
+    const SDL_FRect iconeRect;
+    SDL_Texture* iconeTexture = nullptr;
+    const SDL_Color color;
 public:
-    Bar(const SDL_FRect dest, SDL_Color newColor, IMG_names icone);
+    Bar(const SDL_FRect dest, SDL_Color color, IMG_names icone);
     void blit(int width);
 };

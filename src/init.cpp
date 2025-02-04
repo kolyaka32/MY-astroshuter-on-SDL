@@ -3,21 +3,21 @@
 #include "init.hpp"
 
 // Function of initialasing all libraries
-void initLibraries(){
+void initLibraries() {
     // Initialising main SDL libarary
-    if(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){  
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {  
         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
         exit(ERR_SDL_SDL);
     }
     // Initializing fonts library
-    if(!TTF_Init()){
-        printf("Couldn't initialize font library.\n");
+    if (!TTF_Init()) {
+        SDL_Log("Couldn't initialize font library: %s", SDL_GetError());
         exit(ERR_SDL_FFT);
     }
 }
 
 // Function of creating window and renderer for outputing image
-void createVideo(){
+void createVideo() {
     // Setting application metadata
     SDL_SetAppMetadata("Astroshuter game", "1.0", "com.example.audio-multiple-streams");
 
@@ -35,14 +35,14 @@ void createVideo(){
 }
 
 // Function of deleting window and renders
-void deleteVideo(){
-    //Mix_CloseAudio();                   // Closing audio library
-	SDL_DestroyRenderer(app.renderer);  // Destroying renderer
-	SDL_DestroyWindow(app.window);      // Destrying window
+void deleteVideo() {
+    SDL_CloseAudioDevice(app.stream);
+	SDL_DestroyRenderer(app.renderer);
+	SDL_DestroyWindow(app.window);
 }
 
 // Function of closing all outside libraries and files
-void exitLibraries(){
+void exitLibraries() {
     // Closing all outside libraries
 	TTF_Quit();        // Closing font library
     SDL_Quit();        // Closing main sdl library

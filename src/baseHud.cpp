@@ -5,19 +5,19 @@
 #include "baseHud.hpp"
 
 // Function of creating font
-TTF_Font* createFont(float size){
+TTF_Font* createFont(float size) {
     SDL_IOStream* tempRW = SDL_IOFromConstMem(fontMemory, fontSize);
     return TTF_OpenFontIO(tempRW, true, size);
 };
 
 // Class of static text
-void staticText::clear(){
+void staticText::clear() {
     SDL_DestroySurface(surface);
     SDL_DestroyTexture(texture);
     TTF_CloseFont(font);
 };
 
-void staticText::set(std::string text, int size, ALIGNMENT_types alignment, int x, int y, SDL_Color color ){
+void staticText::set(const std::string& text, int size, ALIGNMENT_types alignment, int x, int y, SDL_Color color ) {
     font = createFont(size);
     surface = TTF_RenderText_Solid(font, text.std::string::c_str(), text.size(), color);
     texture = SDL_CreateTextureFromSurface(app.renderer, surface);
@@ -26,34 +26,34 @@ void staticText::set(std::string text, int size, ALIGNMENT_types alignment, int 
     rect.y = y;
 };
 
-void staticText::draw(){
+void staticText::draw() {
     SDL_RenderTexture(app.renderer, texture, NULL, &rect);
 };
 
 
 // Class of drawing dinamic text at screen
-dinamicText::dinamicText(int size, int x, int y){
+dinamicText::dinamicText(int size, int _x, int _y) {
     font = createFont(size);
-    X = x;
-    rect.y = y;
+    x = _x;
+    rect.y = _y;
 }
 
-void dinamicText::clear(){
+void dinamicText::clear() {
     TTF_CloseFont(font);
-    //SDL_FreeSurface(Surface);
     SDL_DestroyTexture(texture);
 }
 
-void dinamicText::draw(std::string text, const ALIGNMENT_types alignment, SDL_Color color){
-    surface = TTF_RenderText_Solid(font, text.std::string::c_str(), text.size(), color);
+void dinamicText::draw(std::string text, const ALIGNMENT_types alignment, SDL_Color color) {
+    SDL_Surface* surface = TTF_RenderText_Solid(font, text.std::string::c_str(), text.size(), color);
     texture = SDL_CreateTextureFromSurface(app.renderer, surface);
+    SDL_DestroySurface(surface);
     SDL_GetTextureSize(texture, &rect.w, &rect.h);
-    rect.x = X - rect.w * alignment/2;
+    rect.x = x - rect.w * alignment/2;
     SDL_RenderTexture(app.renderer, texture, NULL, &rect);
 };
 
 // Slider class
-Slider::Slider(int y){
+Slider::Slider(int y) {
     textureLine = Textures[IMG_slider_line];
     textureButton = Textures[IMG_slider_button];
     SDL_GetTextureSize(textureLine, &rectLine.w, &rectLine.h);
@@ -63,85 +63,75 @@ Slider::Slider(int y){
     rectButton.y = y - rectButton.h/2;
 };
 
-void Slider::blit(Uint8 state){
+void Slider::blit(int state) {
     rectButton.x = rectLine.x + state - rectButton.w/2;
     SDL_RenderTexture(app.renderer, textureLine, NULL, &rectLine);
     SDL_RenderTexture(app.renderer, textureButton, NULL, &rectButton);
 };
 
-bool Slider::in(float x, float y){
+bool Slider::in(float x, float y) {
     return ((x > rectLine.x && x < rectLine.x + rectLine.w) &&
         (y > rectLine.y && y < rectLine.y + rectLine.h));
 };
 
-int Slider::getX(){
+int Slider::getX() {
     return rectLine.x;
 };
 
 // Button class
-Button::Button(int x, int y, IMG_names textureIndex){
+Button::Button(int x, int y, IMG_names textureIndex) {
     texture = Textures[textureIndex];
     SDL_GetTextureSize(texture, &rect.w, &rect.h);
     rect.x = x - rect.w/2; 
     rect.y = y - rect.h/2;
 };
 
-void Button::blit(){
+void Button::blit() {
     SDL_RenderTexture(app.renderer, texture, NULL, &rect);
     
 };
 
-bool Button::in(float x, float y){
+bool Button::in(float x, float y) {
     return ((x > rect.x && x < rect.x + rect.w) &&
         (y > rect.y && y < rect.y + rect.h));
 };
 
 
 // GIF animation play
-Animation::Animation( SDL_FRect _dest, ANI_names newType ){
-    // Creating animation
-    type = newType;
-    dest = _dest;
-    frame = 0; 
+Animation::Animation( SDL_FRect _dest, ANI_names _type )
+: dest(_dest), type(_type) {
+    // Resetting frames
+    frame = 0;
     prevTick = 0;
 };
 
-void Animation::blit(){
+void Animation::blit() {
     texture = SDL_CreateTextureFromSurface(app.renderer, Animations[type]->frames[frame]);
     SDL_RenderTexture(app.renderer, texture, NULL, &dest);
-    if(SDL_GetTicks() > prevTick + Animations[type]->delays[0]*2/3){
-        frame = (frame+1) % Animations[type]->count;
+    if (SDL_GetTicks() > prevTick + Animations[type]->delays[0]*2/3) {
+        frame = (frame + 1) % Animations[type]->count;
         prevTick = SDL_GetTicks();
     }
 };
 
-void Animation::clear(){
+void Animation::clear() {
     SDL_DestroyTexture(texture);
 };
 
 
 // Bar class
-Bar::Bar(const SDL_FRect dest, SDL_Color newColor, IMG_names icone){
-    // Base bar
-    rectBack = dest;
-    rectFront = dest;
-    color = newColor;
-    // Icone part
-    iconeTexture = Textures[icone];  // Texture of icone
+Bar::Bar(const SDL_FRect _dest, SDL_Color _color, IMG_names icone)
+: iconeRect({_dest.x - 16, _dest.y - 2, 14, 16}),
+iconeTexture(Textures[icone]),
+rectBack(_dest),
+rectFront(_dest),
+color(_color) {}
 
-    iconeRect = dest;
-    iconeRect.w = 14;
-    iconeRect.h = 16;
-    iconeRect.y -= 2;
-    iconeRect.x -= iconeRect.w + 2;
-};
-
-void Bar::blit(int width){
+void Bar::blit(int width) {
     rectFront.w = width;  // Setting width (health bar) 
     SDL_SetRenderDrawColor(app.renderer, 255, 255, 255, 255);  // Drawing back part
     SDL_RenderFillRect(app.renderer, &rectBack);  
     SDL_SetRenderDrawColor(app.renderer, color.r, color.g, color.b, color.a);  // Drawing front part
     SDL_RenderFillRect(app.renderer, &rectFront);
     SDL_RenderTexture(app.renderer, iconeTexture, NULL, &iconeRect);  // Rendering icone
-};
-
+}

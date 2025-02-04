@@ -3,50 +3,50 @@
 #include "pause.hpp"
 
 // Loading initialasing settings in game
-void loadInitFile(){
+void loadInitFile() {
     // Reading file
     std::ifstream in("settings1.ini"); // Open file to read
     std::string line;  // Output string line
 
     language = STANDART_LNG;
-    MusicVolume = MIX_MAX_VOLUME/2;
-    EffectsVolume = MIX_MAX_VOLUME/2;
+    MusicVolume = 1;
+    EffectsVolume = 1;
     MaxScore = 0;
     drawFPS = BASE_FPS;
     advertisingMode = true;
 
-    while(std::getline(in, line)){  // Reading file until it end
+    while(std::getline(in, line)) {  // Reading file until it end
         std::string first = line.substr(0, line.find(' '));
         // Switching between options
-        if( first == "language" ){
+        if ( first == "language" ) {
             std::string lang = line.substr(line.rfind(' ')+1);
-            if(lang == "russian"){
+            if (lang == "russian") {
                 language = RUSSIAN_LNG;
             }
-            else if(lang == "english"){
+            else if (lang == "english") {
                 language = ENGLISH_LNG;
             }
         }
-        else if( first == "music" ){
-            MusicVolume = std::stoi( line.substr(line.rfind(' ')+1) );
+        else if ( first == "music" ) {
+            MusicVolume = std::stof(line.substr(line.rfind(' ') + 1))/100;
         }
-        else if( first == "effects" ){
-            EffectsVolume = std::stoi( line.substr(line.rfind(' ')+1) );
+        else if ( first == "effects" ) {
+            EffectsVolume = std::stof(line.substr(line.rfind(' ') + 1))/100;
         }
-        else if( first == "maxScore" ){
-            MaxScore = std::stoi( line.substr(line.rfind(' ')+1) );
+        else if ( first == "maxScore" ) {
+            MaxScore = std::stoi( line.substr(line.rfind(' ') + 1));
         }
-        else if( first == "FPS" ){
-            drawFPS = std::stoi( line.substr(line.rfind(' ')+1) );
+        else if ( first == "FPS" ) {
+            drawFPS = std::stoi(line.substr(line.rfind(' ') + 1));
         }
-        else if( first == "advertising"){
-            advertisingMode = std::stoi( line.substr(line.rfind(' ')+1) );
+        else if ( first == "advertising") {
+            advertisingMode = std::stoi(line.substr(line.rfind(' ') + 1));
         }
     }
     in.close();  // Closing reading file
 }
 
-void setInitData(){
+void setInitData() {
     // Initialasing constant start text 
     switch (language)  // Setting up language
     {
@@ -59,12 +59,11 @@ void setInitData(){
         break;
     }
     // Setting volumes of sounds
-    Mix_VolumeMusic(MusicVolume);  // Setting volume of music
-    Mix_Volume(-1, EffectsVolume);  // Setting volume of effects
+    SDL_SetAudioDeviceGain(app.stream, EffectsVolume);
 }
 
 // Saving initialasing file
-void saveInitFile(){
+void saveInitFile() {
     std::ofstream setting("settings1.ini");  // Creating output file
 
     // Writing data to output
@@ -79,8 +78,8 @@ void saveInitFile(){
         setting << "language = russian" << std::endl;
         break;
     }
-    setting << "music = " << std::to_string(MusicVolume) << std::endl;  // Writing music volume
-    setting << "effects = " << std::to_string(EffectsVolume) << std::endl;  // Writing effects volume
+    setting << "music = " << std::to_string((int)SDL_roundf(MusicVolume*100.)) << std::endl;  // Writing music volume
+    setting << "effects = " << std::to_string((int)SDL_roundf(EffectsVolume*100.)) << std::endl;  // Writing effects volume
     setting << "maxScore = " << std::to_string(MaxScore) << std::endl;  // Writing max getting score
     setting << "FPS = " << std::to_string(drawFPS) << std::endl;  // Writing frames per seconds
     setting << "advertising = " << std::to_string(advertisingMode);  // Writing state

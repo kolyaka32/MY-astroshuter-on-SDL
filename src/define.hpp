@@ -34,7 +34,7 @@
 #define sonicExplosionCount 8
 
 // Powerup types
-enum POW_types{
+enum POW_types {
     POW_bolt,
     POW_shield,
     POW_count

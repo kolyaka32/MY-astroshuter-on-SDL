@@ -3,63 +3,47 @@
 #include "init.hpp"
 
 // Function of initialasing all libraries
-void initLibraries(){
+void initLibraries() {
     // Initialising main SDL libarary
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){  
-        printf("Couldn't initialise SDL main library.\n");
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {  
+        SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
         exit(ERR_SDL_SDL);
     }
-    // Initializing image library
-    if(!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG)){
-        printf("Couldn't initialize image library.\n");
-        exit(ERR_SDL_IMG);
-    }
     // Initializing fonts library
-    if(TTF_Init()){
-        printf("Couldn't initialize font library.\n");
+    if (!TTF_Init()) {
+        SDL_Log("Couldn't initialize font library: %s", SDL_GetError());
         exit(ERR_SDL_FFT);
-    }
-    // Initializing audio library
-    if(!Mix_Init(MIX_INIT_OGG | MIX_INIT_FLAC)){
-        printf("Couldn't initialize audio library.\n");
-        exit(ERR_SDL_SND);
     }
 }
 
 // Function of creating window and renderer for outputing image
-void createVideo(){
+void createVideo() {
+    // Setting application metadata
+    SDL_SetAppMetadata("Astroshuter game", "1.0", "com.example.audio-multiple-streams");
+
     // Creating main game window
-    app.window = SDL_CreateWindow(WINDOWNAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
-    if(app.window == NULL){
-        printf("Couldn't create window.\n");
-        exit(ERR_INI_WIN);
-    }
-    // Creating renderer from window
-	app.renderer = SDL_CreateRenderer(app.window, -1, SDL_RENDERER_ACCELERATED);
-    if(app.renderer == NULL){
-        printf("Couldn't create renderer.\n");
+    if (!SDL_CreateWindowAndRenderer(WINDOWNAME, SCREEN_WIDTH, SCREEN_HEIGHT, 0, &app.window, &app.renderer)) {
+        SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         exit(ERR_INI_REN);
     }
     // Openning audio chanel
-    if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 )){
-        printf("Couldn't initialase audio chanel.\n");
+    app.stream = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
+    if (app.stream == 0) {
+        SDL_Log("Couldn't open audio device: %s", SDL_GetError());
         exit(ERR_INI_SND);
     }
 }
 
 // Function of deleting window and renders
-void deleteVideo(){
-    Mix_CloseAudio();                   // Closing audio library
-	SDL_DestroyRenderer(app.renderer);  // Destroying renderer
-	SDL_DestroyWindow(app.window);      // Destrying window
+void deleteVideo() {
+    SDL_CloseAudioDevice(app.stream);
+	SDL_DestroyRenderer(app.renderer);
+	SDL_DestroyWindow(app.window);
 }
 
 // Function of closing all outside libraries and files
-void exitLibraries(){
+void exitLibraries() {
     // Closing all outside libraries
-    Mix_CloseAudio();  // Closing audio player
-    Mix_Quit();        // Closing mixer player
 	TTF_Quit();        // Closing font library
-    IMG_Quit();        // Closing image library
     SDL_Quit();        // Closing main sdl library
 }

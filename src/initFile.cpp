@@ -18,7 +18,7 @@ void loadInitFile() {
     while(std::getline(in, line)) {  // Reading file until it end
         std::string first = line.substr(0, line.find(' '));
         // Switching between options
-        if ( first == "language" ) {
+        if ( first == "language") {
             std::string lang = line.substr(line.rfind(' ')+1);
             if (lang == "russian") {
                 language = RUSSIAN_LNG;
@@ -27,16 +27,16 @@ void loadInitFile() {
                 language = ENGLISH_LNG;
             }
         }
-        else if ( first == "music" ) {
+        else if ( first == "music") {
             MusicVolume = std::stof(line.substr(line.rfind(' ') + 1))/100;
         }
-        else if ( first == "effects" ) {
+        else if ( first == "effects") {
             EffectsVolume = std::stof(line.substr(line.rfind(' ') + 1))/100;
         }
-        else if ( first == "maxScore" ) {
+        else if ( first == "maxScore") {
             MaxScore = std::stoi( line.substr(line.rfind(' ') + 1));
         }
-        else if ( first == "FPS" ) {
+        else if ( first == "FPS") {
             drawFPS = std::stoi(line.substr(line.rfind(' ') + 1));
         }
         else if ( first == "advertising") {

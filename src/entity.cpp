@@ -189,7 +189,7 @@ bool Mob::isOver() {
 
 // Function of drawing at screen
 void Mob::blit() {
-    SDL_RenderTextureRotated( app.renderer, texture, NULL, &dest, rot, NULL, SDL_FLIP_NONE );
+    SDL_RenderTextureRotated( app.renderer, texture, NULL, &dest, rot, NULL, SDL_FLIP_NONE);
 };
 
 // Set explosion animation

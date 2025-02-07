@@ -74,7 +74,7 @@ int main(int argv, char** args) {
     Bar BoostBar({20, 20, 100, 10}, {0, 0, 255, 255}, IMG_bolt);  // Bar of the remaining boost time
 
     /*if (!advertisingMode) {
-        Mix_PlayMusic( Musics[MUS_main], -1 );  // Infinite playing music without advertisment
+        Mix_PlayMusic( Musics[MUS_main], -1);  // Infinite playing music without advertisment
     }*/
 
     // Cycle variables
@@ -90,7 +90,7 @@ int main(int argv, char** args) {
         }
 
         // Getting events
-        while( SDL_PollEvent(&event) != 0 ) {  
+        while( SDL_PollEvent(&event) != 0) {  
             switch (event.type) {
             case SDL_EVENT_QUIT:
                 running = false;  // Exit from program
@@ -150,7 +150,7 @@ int main(int argv, char** args) {
         if (!running) break;  // Breaking main cycle, if necesary
         
         // Objects update
-        if ( ((SDL_GetTicks() - oldMoveTime) > 1000 / UPDATE_FPS) ) {  // Updating all objects once per need time
+        if ( ((SDL_GetTicks() - oldMoveTime) > 1000 / UPDATE_FPS)) {  // Updating all objects once per need time
             // Moving all objects
             player.update();
             if (Shooting) {
@@ -191,7 +191,7 @@ int main(int argv, char** args) {
                         // Explosion of meteor
                         score += MobArray[j].dest.w;  // Increasing global score
                         // Adding meteor for increassing difficulty
-                        if ( (MobArray.size() < MAX_NUM_METEOR) && (score/METEOR_ADD_SCORE + START_NUM_ASTEROID > MobArray.size()) ) {  
+                        if ( (MobArray.size() < MAX_NUM_METEOR) && (score/METEOR_ADD_SCORE + START_NUM_ASTEROID > MobArray.size())) {  
                             MobArray.push_back(Mob());
                             MobArray[MobArray.size()-1].reset();
                         }
@@ -256,7 +256,7 @@ int main(int argv, char** args) {
             // Drawing text and icons at screen
             ShieldBar.blit(player.shield);
             if (lastBoostTicks > 0) {
-                BoostBar.blit( 100 * lastBoostTicks / D_POWERUP_TICKS  );
+                BoostBar.blit( 100 * lastBoostTicks / D_POWERUP_TICKS );
             }
 
             ScoreText.draw(std::to_string(score), MIDLE_text);  // Drawing score at screen
@@ -274,7 +274,7 @@ int main(int argv, char** args) {
         // Waiting until next moving or drawing
         Sint64 MoveSleep = ((SDL_GetTicks() - oldMoveTime) - 1000/UPDATE_FPS);
         Sint64 DrawSleep = ((SDL_GetTicks() - oldDrawTime) - 1000/drawFPS);
-        SDL_Delay( MAX(MIN( MoveSleep, DrawSleep ), 0) );
+        SDL_Delay( MAX(MIN( MoveSleep, DrawSleep), 0));
 	}
     // Exiting program
     saveInitFile();  // Saving all data to setting file for next start

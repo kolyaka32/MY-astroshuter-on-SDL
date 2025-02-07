@@ -20,7 +20,7 @@ void setEnglishText() {
     texts[TXT_PAUSE_SOUND].set("Sounds", 22, MIDLE_text, SCREEN_WIDTH/2, 400);
     texts[TXT_MENU_SCORE].set("Your last score: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
     texts[TXT_MENU_HIGH_SCORE].set("Your max score: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
-    SDL_SetWindowTitle(app.window, "Astroshuter on SDL");
+    SDL_SetWindowTitle(app.window, "Astroshooter on SDL");
 };
 
 void setRussianText() {
@@ -40,8 +40,8 @@ void pause() {
     // Creating pause text
     Slider MusicSlider(300);
     Slider SoundSlider(450);
-    Button BtnFlagUSA(SCREEN_WIDTH/2 - 100, 140, IMG_flag_USA );
-    Button BtnFlagRUS(SCREEN_WIDTH/2 + 100, 140, IMG_flag_RUS );
+    Button BtnFlagUSA(SCREEN_WIDTH/2 - 100, 140, IMG_flag_USA);
+    Button BtnFlagRUS(SCREEN_WIDTH/2 + 100, 140, IMG_flag_RUS);
 
     SDL_Event event;
     bool waiting = true;
@@ -49,7 +49,7 @@ void pause() {
     char inBox = NORMAL_BOX;
     Uint64 prevSND = SDL_GetTicks();
     while(waiting) {  // Starting loop for waiting for start
-        while( SDL_PollEvent(&event) != 0 ) {
+        while( SDL_PollEvent(&event) != 0) {
             switch (event.type)
             {
             case SDL_EVENT_QUIT:
@@ -105,7 +105,7 @@ void pause() {
             SDL_SetAudioDeviceGain(app.stream, EffectsVolume);
             
             // Playing sound effect for understanding loud
-            if ( SDL_GetTicks() - prevSND > 200 ) {
+            if ( SDL_GetTicks() - prevSND > 200) {
                 Sounds[SND_laser].play();
                 prevSND = SDL_GetTicks();
             }
@@ -151,7 +151,7 @@ void startMenu() {
     }
     
     if (advertisingMode) {
-        //Mix_PlayMusic( Musics[MUS_menu], -1 );  // Infinite playing music
+        //Mix_PlayMusic( Musics[MUS_menu], -1);  // Infinite playing music
     }
 
     // HUD
@@ -176,7 +176,7 @@ void startMenu() {
     bool waiting = true;
     SDL_Event event;
     while(waiting && running) {
-        while( SDL_PollEvent(&event) != 0 ) {  // Getting events
+        while( SDL_PollEvent(&event) != 0) {  // Getting events
             switch (event.type)
             {
             case SDL_EVENT_QUIT:
@@ -217,7 +217,7 @@ void startMenu() {
         }
         SDL_RenderPresent(app.renderer);
 
-        SDL_Delay( 1000/drawFPS );    // Delaying constant time between ticks to decrease CPU loading
+        SDL_Delay( 1000/drawFPS);    // Delaying constant time between ticks to decrease CPU loading
     }
     // Clearing animations
     if (advertisingMode) {
@@ -237,6 +237,6 @@ void startMenu() {
     game_over = false;
     score = 0;
     if (advertisingMode) {
-        //Mix_PlayMusic( Musics[MUS_main], -1 );  // Infinite playing music
+        //Mix_PlayMusic( Musics[MUS_main], -1);  // Infinite playing music
     }
 }

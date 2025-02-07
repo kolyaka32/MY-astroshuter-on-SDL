@@ -4,7 +4,7 @@
 #define MEME_MOD false  // Activate meme mode
 
 // System numbers
-#define WINDOWNAME "Astroshuter on SDL"
+#define WINDOWNAME "Astroshooter on SDL"
 #define SCREEN_WIDTH 480
 #define GAME_HEIGHT 600
 #define ADV_HIGHT 70

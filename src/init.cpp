@@ -19,7 +19,7 @@ void initLibraries() {
 // Function of creating window and renderer for outputing image
 void createVideo() {
     // Setting application metadata
-    SDL_SetAppMetadata("Astroshuter game", "1.0", "com.example.audio-multiple-streams");
+    SDL_SetAppMetadata("Astroshooter game", "1.2", NULL);
 
     // Creating main game window
     if (!SDL_CreateWindowAndRenderer(WINDOWNAME, SCREEN_WIDTH, SCREEN_HEIGHT, 0, &app.window, &app.renderer)) {

@@ -5,6 +5,7 @@
 // Types of selected box
 enum{  
     NORMAL_BOX,
+    ESCAPE_BOX,
     MUSIC_SLIDER_BOX,
     EFFECT_SLIDER_BOX,
     ENGLISH_BOX,
@@ -40,6 +41,8 @@ void pause() {
     // Creating pause text
     Slider MusicSlider(300);
     Slider SoundSlider(450);
+
+    Button esc(SCREEN_WIDTH - 24, 24, IMG_esc_button);
     Button BtnFlagUSA(SCREEN_WIDTH/2 - 100, 140, IMG_flag_USA);
     Button BtnFlagRUS(SCREEN_WIDTH/2 + 100, 140, IMG_flag_RUS);
 
@@ -76,7 +79,9 @@ void pause() {
         float MouseX, MouseY;
         SDL_GetMouseState(&MouseX, &MouseY);  // Getting mouse position
         if (MouseDown && inBox == NORMAL_BOX) {
-            if (MusicSlider.in(MouseX, MouseY)) {
+            if (esc.in(MouseX, MouseY)) {
+                inBox = ESCAPE_BOX;
+            }else if (MusicSlider.in(MouseX, MouseY)) {
                 inBox = MUSIC_SLIDER_BOX;
             }
             else if (SoundSlider.in(MouseX, MouseY)) {
@@ -91,6 +96,11 @@ void pause() {
         }
         switch(inBox)
         {
+        case ESCAPE_BOX:
+            // Exiting pause cycle
+            waiting = false;
+            break;
+
         case MUSIC_SLIDER_BOX:  // If touch music slider
             MusicVolume = (MouseX - MusicSlider.getX()) / 128;
             if (MouseX - MusicSlider.getX() < 0) MusicVolume = 0;
@@ -98,6 +108,7 @@ void pause() {
             
             //Mix_VolumeMusic(MusicVolume);  // Setting volume of music
             break;
+
         case EFFECT_SLIDER_BOX:  // If touch effects slider
             EffectsVolume = (MouseX - SoundSlider.getX()) / 128;
             if (MouseX - SoundSlider.getX() < 0) EffectsVolume = 0;
@@ -110,10 +121,12 @@ void pause() {
                 prevSND = SDL_GetTicks();
             }
             break;
+
         case ENGLISH_BOX:  // If touch english language box
             setEnglishText();
             language = ENGLISH_LNG;
             break;
+
         case RUSSIAN_BOX:  // If touch russian language box
             setRussianText();
             language = RUSSIAN_LNG;
@@ -131,6 +144,7 @@ void pause() {
         MusicSlider.blit(MusicVolume*128);
         SoundSlider.blit(EffectsVolume*128);
         // Drawing buttons
+        esc.blit();
         BtnFlagUSA.blit();
         BtnFlagRUS.blit();
         // Drawing advertisment at bottom (if need)

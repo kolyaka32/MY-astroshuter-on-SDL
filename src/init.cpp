@@ -27,9 +27,8 @@ void createVideo() {
         exit(ERR_INI_REN);
     }
     // Openning audio chanel
-    app.stream = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
-    if (app.stream == 0) {
-        SDL_Log("Couldn't open audio device: %s", SDL_GetError());
+    if(!Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 )){
+        SDL_Log("Couldn't initialase audio chanel: %s", SDL_GetError());
         exit(ERR_INI_SND);
     }
 }

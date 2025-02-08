@@ -5,6 +5,7 @@
 // Types of selected box
 enum{  
     NORMAL_BOX,
+    ESCAPE_BOX,
     MUSIC_SLIDER_BOX,
     EFFECT_SLIDER_BOX,
     ENGLISH_BOX,
@@ -20,7 +21,7 @@ void setEnglishText() {
     texts[TXT_PAUSE_SOUND].set("Sounds", 22, MIDLE_text, SCREEN_WIDTH/2, 400);
     texts[TXT_MENU_SCORE].set("Your last score: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
     texts[TXT_MENU_HIGH_SCORE].set("Your max score: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
-    SDL_SetWindowTitle(app.window, "Astroshuter on SDL");
+    SDL_SetWindowTitle(app.window, "Astroshooter on SDL");
 };
 
 void setRussianText() {
@@ -40,8 +41,10 @@ void pause() {
     // Creating pause text
     Slider MusicSlider(300);
     Slider SoundSlider(450);
-    Button BtnFlagUSA(SCREEN_WIDTH/2 - 100, 140, IMG_flag_USA );
-    Button BtnFlagRUS(SCREEN_WIDTH/2 + 100, 140, IMG_flag_RUS );
+
+    Button esc(SCREEN_WIDTH - 24, 24, IMG_esc_button);
+    Button BtnFlagUSA(SCREEN_WIDTH/2 - 100, 140, IMG_flag_USA);
+    Button BtnFlagRUS(SCREEN_WIDTH/2 + 100, 140, IMG_flag_RUS);
 
     SDL_Event event;
     bool waiting = true;
@@ -49,7 +52,7 @@ void pause() {
     char inBox = NORMAL_BOX;
     Uint64 prevSND = SDL_GetTicks();
     while(waiting) {  // Starting loop for waiting for start
-        while( SDL_PollEvent(&event) != 0 ) {
+        while( SDL_PollEvent(&event) != 0) {
             switch (event.type)
             {
             case SDL_EVENT_QUIT:
@@ -76,7 +79,9 @@ void pause() {
         float MouseX, MouseY;
         SDL_GetMouseState(&MouseX, &MouseY);  // Getting mouse position
         if (MouseDown && inBox == NORMAL_BOX) {
-            if (MusicSlider.in(MouseX, MouseY)) {
+            if (esc.in(MouseX, MouseY)) {
+                inBox = ESCAPE_BOX;
+            }else if (MusicSlider.in(MouseX, MouseY)) {
                 inBox = MUSIC_SLIDER_BOX;
             }
             else if (SoundSlider.in(MouseX, MouseY)) {
@@ -91,6 +96,11 @@ void pause() {
         }
         switch(inBox)
         {
+        case ESCAPE_BOX:
+            // Exiting pause cycle
+            waiting = false;
+            break;
+
         case MUSIC_SLIDER_BOX:  // If touch music slider
             MusicVolume = (MouseX - MusicSlider.getX()) / 128;
             if (MouseX - MusicSlider.getX() < 0) MusicVolume = 0;
@@ -98,6 +108,7 @@ void pause() {
             
             //Mix_VolumeMusic(MusicVolume);  // Setting volume of music
             break;
+
         case EFFECT_SLIDER_BOX:  // If touch effects slider
             EffectsVolume = (MouseX - SoundSlider.getX()) / 128;
             if (MouseX - SoundSlider.getX() < 0) EffectsVolume = 0;
@@ -105,15 +116,17 @@ void pause() {
             SDL_SetAudioDeviceGain(app.stream, EffectsVolume);
             
             // Playing sound effect for understanding loud
-            if ( SDL_GetTicks() - prevSND > 200 ) {
+            if ( SDL_GetTicks() - prevSND > 200) {
                 Sounds[SND_laser].play();
                 prevSND = SDL_GetTicks();
             }
             break;
+
         case ENGLISH_BOX:  // If touch english language box
             setEnglishText();
             language = ENGLISH_LNG;
             break;
+
         case RUSSIAN_BOX:  // If touch russian language box
             setRussianText();
             language = RUSSIAN_LNG;
@@ -131,6 +144,7 @@ void pause() {
         MusicSlider.blit(MusicVolume*128);
         SoundSlider.blit(EffectsVolume*128);
         // Drawing buttons
+        esc.blit();
         BtnFlagUSA.blit();
         BtnFlagRUS.blit();
         // Drawing advertisment at bottom (if need)
@@ -151,7 +165,7 @@ void startMenu() {
     }
     
     if (advertisingMode) {
-        //Mix_PlayMusic( Musics[MUS_menu], -1 );  // Infinite playing music
+        //Mix_PlayMusic( Musics[MUS_menu], -1);  // Infinite playing music
     }
 
     // HUD
@@ -176,7 +190,7 @@ void startMenu() {
     bool waiting = true;
     SDL_Event event;
     while(waiting && running) {
-        while( SDL_PollEvent(&event) != 0 ) {  // Getting events
+        while( SDL_PollEvent(&event) != 0) {  // Getting events
             switch (event.type)
             {
             case SDL_EVENT_QUIT:
@@ -217,7 +231,7 @@ void startMenu() {
         }
         SDL_RenderPresent(app.renderer);
 
-        SDL_Delay( 1000/drawFPS );    // Delaying constant time between ticks to decrease CPU loading
+        SDL_Delay( 1000/drawFPS);    // Delaying constant time between ticks to decrease CPU loading
     }
     // Clearing animations
     if (advertisingMode) {
@@ -237,6 +251,6 @@ void startMenu() {
     game_over = false;
     score = 0;
     if (advertisingMode) {
-        //Mix_PlayMusic( Musics[MUS_main], -1 );  // Infinite playing music
+        //Mix_PlayMusic( Musics[MUS_main], -1);  // Infinite playing music
     }
 }

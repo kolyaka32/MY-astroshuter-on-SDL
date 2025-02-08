@@ -17,7 +17,7 @@ void staticText::clear() {
     TTF_CloseFont(font);
 };
 
-void staticText::set(const std::string& text, int size, ALIGNMENT_types alignment, int x, int y, SDL_Color color ) {
+void staticText::set(const std::string& text, int size, ALIGNMENT_types alignment, int x, int y, SDL_Color color) {
     font = createFont(size);
     surface = TTF_RenderText_Solid(font, text.std::string::c_str(), text.size(), color);
     texture = SDL_CreateTextureFromSurface(app.renderer, surface);
@@ -98,7 +98,7 @@ bool Button::in(float x, float y) {
 
 
 // GIF animation play
-Animation::Animation( SDL_FRect _dest, ANI_names _type )
+Animation::Animation( SDL_FRect _dest, ANI_names _type)
 : dest(_dest), type(_type) {
     // Resetting frames
     frame = 0;

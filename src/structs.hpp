@@ -34,12 +34,12 @@ extern SDL_Texture* Textures[IMG_count];  // Array of all textures
 // All animations
 extern IMG_Animation* Animations[ANI_count];  // Array of all animations
 
-// All music trcks
-//extern Mix_Music* Musics[MUS_count];  // Array of all music
-//extern SDL_RWops* MusicsData[MUS_count];  // Array of data for music
+// All music tracks
+extern Mix_Music* Musics[MUS_count];  // Array of all music
+extern SDL_IOStream* MusicsData[MUS_count];  // Array of data for music
 
 // All effects sounds
-extern Sound Sounds[SND_count];  // Array of all sound effects
+extern Mix_Chunk* Sounds[SND_count];  // Array of all sound effects
 
 // Flags of running
 extern bool running;  // Flag of main cycle work

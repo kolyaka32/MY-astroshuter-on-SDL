@@ -12,15 +12,15 @@ TTF_Font* createFont(float size) {
 
 // Class of static text
 void staticText::clear() {
-    SDL_DestroySurface(surface);
     SDL_DestroyTexture(texture);
     TTF_CloseFont(font);
 };
 
 void staticText::set(const std::string& text, int size, ALIGNMENT_types alignment, int x, int y, SDL_Color color) {
     font = createFont(size);
-    surface = TTF_RenderText_Solid(font, text.std::string::c_str(), text.size(), color);
+    SDL_Surface* surface = TTF_RenderText_Solid(font, text.std::string::c_str(), text.size(), color);
     texture = SDL_CreateTextureFromSurface(app.renderer, surface);
+    SDL_DestroySurface(surface);
     SDL_GetTextureSize(texture, &rect.w, &rect.h);
     rect.x = x - rect.w * alignment/2;
     rect.y = y;
@@ -43,8 +43,11 @@ void dinamicText::clear() {
     SDL_DestroyTexture(texture);
 }
 
-void dinamicText::draw(std::string text, const ALIGNMENT_types alignment, SDL_Color color) {
-    SDL_Surface* surface = TTF_RenderText_Solid(font, text.std::string::c_str(), text.size(), color);
+void dinamicText::draw(const std::string& _text, ALIGNMENT_types alignment, SDL_Color color) {
+    if (texture) {
+        SDL_DestroyTexture(texture);
+    }
+    SDL_Surface* surface = TTF_RenderText_Solid(font, _text.std::string::c_str(), _text.size(), color);
     texture = SDL_CreateTextureFromSurface(app.renderer, surface);
     SDL_DestroySurface(surface);
     SDL_GetTextureSize(texture, &rect.w, &rect.h);
@@ -88,7 +91,6 @@ Button::Button(int x, int y, IMG_names textureIndex) {
 
 void Button::blit() {
     SDL_RenderTexture(app.renderer, texture, NULL, &rect);
-    
 };
 
 bool Button::in(float x, float y) {
@@ -106,12 +108,13 @@ Animation::Animation( SDL_FRect _dest, ANI_names _type)
 };
 
 void Animation::blit() {
-    texture = SDL_CreateTextureFromSurface(app.renderer, Animations[type]->frames[frame]);
-    SDL_RenderTexture(app.renderer, texture, NULL, &dest);
-    if (SDL_GetTicks() > prevTick + Animations[type]->delays[0]*2/3) {
+    if (SDL_GetTicks() > prevTick) {
         frame = (frame + 1) % Animations[type]->count;
-        prevTick = SDL_GetTicks();
+        SDL_DestroyTexture(texture);
+        texture = SDL_CreateTextureFromSurface(app.renderer, Animations[type]->frames[frame]);
+        prevTick = SDL_GetTicks() + Animations[type]->delays[frame] / 2;
     }
+    SDL_RenderTexture(app.renderer, texture, NULL, &dest);
 };
 
 void Animation::clear() {

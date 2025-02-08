@@ -19,7 +19,6 @@ class staticText
 {
 private:
     TTF_Font* font = nullptr;
-    SDL_Surface *surface = nullptr;
     SDL_Texture *texture = nullptr;
     SDL_FRect rect = {0, 0, 0, 0};
 public:
@@ -39,7 +38,7 @@ private:
 public:
     dinamicText(int size, int x, int y);
     void clear();
-    void draw(std::string text, ALIGNMENT_types alignment, SDL_Color color = {255, 255, 255});
+    void draw(const std::string& text, ALIGNMENT_types alignment, SDL_Color color = {255, 255, 255});
 };
 
 // Class of HUD slider for better choosen parameters

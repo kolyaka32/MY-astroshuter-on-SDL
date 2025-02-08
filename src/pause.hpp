@@ -5,9 +5,9 @@
 
 // Types of language
 enum{
-    STANDART_LNG,  // Standart type of language (english)
+    STANDART_LNG, // Standart type of language (english)
     ENGLISH_LNG,  // English language
-    RUSSIAN_LNG  // Russian language
+    RUSSIAN_LNG,  // Russian language
 } LANGUAGE_types;
 
 // Setting text of interface
@@ -44,8 +44,8 @@ extern Animation Advertisment;
 
 // External values to save and load from settings file
 extern Uint8 language;  // Language settings
-extern float MusicVolume;  // Start volume of music
-extern float EffectsVolume;  // Start volume of effects
+extern Uint8 musicVolume;  // Start volume of music
+extern Uint8 effectsVolume;  // Start volume of effects
 extern Uint32 score;  // Current player score
 extern Uint32 MaxScore;  // Maximal player score
 extern Uint16 drawFPS;  // Setted frames per seconds

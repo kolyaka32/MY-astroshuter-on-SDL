@@ -20,13 +20,13 @@ uint64_t fontSize;    // Size of memory buffer
 
 // Global numbers
 // Last time and previous ticks update
-Uint64 oldMoveTime;
-Uint64 oldDrawTime;
+Uint64 moveTime;
+Uint64 drawTime;
 Uint16 lastBoostTicks;  // Ticks from boost activation
 // Pause and init settings
 Uint8 language;         // Switched languaged from language_types
-float MusicVolume;      // Volume of music
-float EffectsVolume;    // Volume of effects
+Uint8 musicVolume;      // Volume of music
+Uint8 effectsVolume;    // Volume of effects
 Uint32 MaxScore;        // Max previous game score
 Uint16 drawFPS;         // Max terget FPS to draw
 Uint32 score;           // Game score
@@ -39,9 +39,9 @@ bool advertisingMode;   // Mode of showing 'advertisment'
 // Texts variables and constants
 SDL_Texture* Textures[IMG_count];      // Array of all textures
 IMG_Animation* Animations[ANI_count];  // Array of all animations
-//Mix_Music* Musics[MUS_count];          // Array of all music
-//SDL_RWops* MusicsData[MUS_count];      // Array of data for music
-Sound Sounds[SND_count];  // Array of all sound effects
+Mix_Music* Musics[MUS_count];          // Array of all music
+SDL_IOStream* MusicsData[MUS_count];   // Array of data for music
+Mix_Chunk* Sounds[SND_count];          // Array of all sound effects
 
 // Global statick texts
 staticText texts[TXT_count];
@@ -73,9 +73,9 @@ int main(int argv, char** args) {
     Bar ShieldBar({20, 5, MAX_SHIELD, 10}, {0, 255, 0, 255}, IMG_shield);  // Shield/health bar
     Bar BoostBar({20, 20, 100, 10}, {0, 0, 255, 255}, IMG_bolt);  // Bar of the remaining boost time
 
-    /*if (!advertisingMode) {
+    if (!advertisingMode) {
         Mix_PlayMusic( Musics[MUS_main], -1);  // Infinite playing music without advertisment
-    }*/
+    }
 
     // Cycle variables
     SDL_Event event;
@@ -148,9 +148,9 @@ int main(int argv, char** args) {
             }
         }
         if (!running) break;  // Breaking main cycle, if necesary
-        
+
         // Objects update
-        if ( ((SDL_GetTicks() - oldMoveTime) > 1000 / UPDATE_FPS)) {  // Updating all objects once per need time
+        if (SDL_GetTicks() > moveTime) {  // Updating all objects once per need time
             // Moving all objects
             player.update();
             if (Shooting) {
@@ -197,7 +197,7 @@ int main(int argv, char** args) {
                         }
                         BulletArray.erase(BulletArray.begin()+i);  // Deliting bullet
                         i--;
-                        Sounds[SND_regExplosion].play();
+                        Mix_PlayChannel(-1, Sounds[SND_regExplosion], 0);
                         MobArray[j].setAnimation();
                         if (rand() % 10 == 0) {  // Random creating of power-up
                             Pow newPow(MobArray[j].dest);
@@ -219,8 +219,9 @@ int main(int argv, char** args) {
                         else{
                             player.shield -= MobArray[i].dest.w / 2;
                         }
-                        Sounds[SND_sonicExplosion].play();
-                        MobArray[i].setAnimation();  // Playing animation of explosion meteor
+                        Mix_PlayChannel(-1, Sounds[SND_sonicExplosion], 1);
+                        // Playing animation of explosion meteor
+                        MobArray[i].setAnimation();
                     }
                 }
                 // Collision of ship and power-ups
@@ -235,11 +236,11 @@ int main(int argv, char** args) {
             if (lastBoostTicks != 0) {
                 lastBoostTicks--;
             }
-            oldMoveTime = SDL_GetTicks();
+            moveTime = SDL_GetTicks() + 1000/BASE_FPS;
         }
 
         // Drawing all at screen
-        if (SDL_GetTicks() - oldDrawTime > 1000 / drawFPS) {  // Checking, if drawing need
+        if (SDL_GetTicks() > drawTime) {  // Checking, if drawing need
             SDL_RenderTexture(app.renderer, Textures[IMG_background], NULL, NULL);  // Drawing background at screen
 
             player.blit();  // Drawing player at screen
@@ -258,22 +259,22 @@ int main(int argv, char** args) {
             if (lastBoostTicks > 0) {
                 BoostBar.blit( 100 * lastBoostTicks / D_POWERUP_TICKS );
             }
-
             ScoreText.draw(std::to_string(score), MIDLE_text);  // Drawing score at screen
             player.blitLives();  // Drawing lives of player at screen
             esc.blit();  // Drawing escape button on screen
             if (advertisingMode) {
                 Advertisment.blit();  // Drawing advertisment at bottom
             }
-            
+
             SDL_RenderPresent(app.renderer);  // Blitting all objects on screen
 
-            oldDrawTime = SDL_GetTicks();  // Getting last update time
+            // Getting last update time
+            drawTime = SDL_GetTicks() + 1000/drawFPS;
         };
 
         // Waiting until next moving or drawing
-        Sint64 MoveSleep = ((SDL_GetTicks() - oldMoveTime) - 1000/UPDATE_FPS);
-        Sint64 DrawSleep = ((SDL_GetTicks() - oldDrawTime) - 1000/drawFPS);
+        Sint64 MoveSleep = (moveTime - SDL_GetTicks());
+        Sint64 DrawSleep = (drawTime - SDL_GetTicks());
         SDL_Delay( MAX(MIN( MoveSleep, DrawSleep), 0));
 	}
     // Exiting program

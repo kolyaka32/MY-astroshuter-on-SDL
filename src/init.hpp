@@ -18,8 +18,8 @@ void exitLibraries();
 #define ERR_SDL_OTH 0x00010  // error with other sdl library
 #define ERR_SDL_SDL 0x00011  // error with main sdl library
 #define ERR_SDL_IMG 0x00012  // error with image sdl library
-#define ERR_SDL_SND 0x00013  // error with sound sdl library
-#define ERR_SDL_FFT 0x00014  // error with font sdl library
+#define ERR_SDL_AUD 0x00013  // error with audio sdl library
+#define ERR_SDL_TTF 0x00014  // error with font sdl library
 
 // Global initialisations
 #define ERR_INI_OTH 0x00020  // error with other initialisation

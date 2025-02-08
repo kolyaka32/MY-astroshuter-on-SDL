@@ -99,44 +99,27 @@ static void loadAnimation(const char* name, ANI_names number) {
 // Function of loading selected music file
 static void loadMusic(const char* name, MUS_names number) {
     // Getting selected music track data
-    //MusicsData[number] = dataFromarchive(name);
+    MusicsData[number] = dataFromarchive(name);
     // Creating music track from data
-    //Musics[number] = Mix_LoadMUS_IO(MusicsData[number], 0);
+    Musics[number] = Mix_LoadMUS_IO(MusicsData[number], 0);
 
     // Checking correction of loaded file
-    /*if (Musics[number] != NULL) {
+    if (Musics[number] != NULL) {
         loadedMusics++;
-    };*/
+    };
 };
 
 // Function of loading selected sound
 static void loadSound(const char* name, SND_names number) {
     // Getting selected sound data
     SDL_IOStream* tempRW = dataFromarchive(name);
+    // Creating sound from data
+    Sounds[number] = Mix_LoadWAV_IO(tempRW, 1);
 
-
-    SDL_AudioSpec spec;
-
-    /* Load the .wav files from wherever the app is being run from. */
-    if (!SDL_LoadWAV_IO(tempRW, true, &spec, &Sounds[number].wav_data, &Sounds[number].wav_data_len)) {
-        SDL_Log("Couldn't load .wav file: %s", SDL_GetError());
-        return;
-    }
-
-    /* Create an audio stream. Set the source format to the wav's format (what
-       we'll input), leave the dest format NULL here (it'll change to what the
-       device wants once we bind it). */
-    Sounds[number].stream = SDL_CreateAudioStream(&spec, NULL);
-    if (!Sounds[number].stream) {
-        SDL_Log("Couldn't create audio stream: %s", SDL_GetError());
-        return;
-    } 
-    if (!SDL_BindAudioStream(app.stream, Sounds[number].stream)) {  /* once bound, it'll start playing when there is data available! */
-        SDL_Log("Failed to bind '%s' stream to device: %s", name, SDL_GetError());
-        return;
-    }
-
-    loadedSounds++;
+    // Checking correction of loaded file
+    if(Sounds[number] != NULL){
+        loadedSounds++;
+    };
 };
 
 // Function of loading font
@@ -264,10 +247,10 @@ void loadData(const char* fileName) {
         printf("Wrong count of animations: %s", SDL_GetError());
         exit(ERR_FIL_ANI);
     }
-    /*if (loadAllMusic() != MUS_count) {
+    if (loadAllMusic() != MUS_count) {
         printf("Wrong count of music: %s", SDL_GetError());
         exit(ERR_FIL_MUS);
-    }*/
+    }
     if (loadAllSounds() != SND_count) {
         printf("Wrong count of sounds: %s", SDL_GetError());
         exit(ERR_FIL_SND);
@@ -289,14 +272,13 @@ void unloadData() {
     free(fontMemory);
     // Unloading sound effects
     for(int i=0; i < SND_count; ++i) {
-        SDL_PutAudioStreamData(Sounds[i].stream, Sounds[i].wav_data, (int) Sounds[i].wav_data_len);
-        SDL_free(Sounds[i].wav_data);
+        Mix_FreeChunk(Sounds[i]);
     }
     // Unloading music effects and data
-    /*for(int i=0; i < MUS_count; ++i) {
+    for(int i=0; i < MUS_count; ++i) {
         Mix_FreeMusic(Musics[i]);
-        SDL_RWclose(MusicsData[i]);
-    }*/
+        SDL_CloseIO(MusicsData[i]);
+    }
     // Unloading gif animations
     for(int i=0; i < ANI_count; ++i) {
         IMG_FreeAnimation(Animations[i]);

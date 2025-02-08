@@ -63,7 +63,7 @@ void Head::tryShoot() {
             Bullet newBullet(dest.x + dest.w/2-6, dest.y-20);
             BulletArray.push_back(newBullet);
         }
-        Sounds[SND_laser].play();  // Playing sound of shooting
+        Mix_PlayChannel(-1, Sounds[SND_laser], 0);
     }
 };
 
@@ -116,8 +116,8 @@ void Head::blitLives() {
 
 // Set explosion animation
 void Head::setAnimation() {
-    frame = IMG_sonic_explosion0*5;
-    texture = Textures[ frame/5 ];
+    frame = IMG_sonic_explosion0 * 5;
+    texture = Textures[frame / 5];
     SDL_GetTextureSize(texture, &dest.w, &dest.h);
     dest.w /= 2; dest.h /= 2;
 }
@@ -131,8 +131,10 @@ bool Head::isAnimation() {
 // Bullet class
 // Setting new bullet at need position
 Bullet::Bullet(int PosX, int PosY) {
-    speedx = 0; speedy = -LASER_SPEED;
-    dest.x = PosX; dest.y = PosY;
+    speedx = 0;
+    speedy = -LASER_SPEED;
+    dest.x = PosX;
+    dest.y = PosY;
     texture = Textures[IMG_laser];
     SDL_GetTextureSize(texture, &dest.w, &dest.h);
 };
@@ -229,7 +231,7 @@ void Pow::activate() {
     {
     case POW_bolt:
         lastBoostTicks = D_POWERUP_TICKS;  // Setting ticks for boost
-        Sounds[SND_bolt].play();
+        Mix_PlayChannel(-1, Sounds[SND_bolt], 0);
         break;
     
     case POW_shield:
@@ -237,7 +239,7 @@ void Pow::activate() {
         if (player.shield >= MAX_SHIELD) {
             player.shield = MAX_SHIELD;
         }
-        Sounds[SND_shield].play();
+        Mix_PlayChannel(-1, Sounds[SND_shield], 0);
         break;
 
     }

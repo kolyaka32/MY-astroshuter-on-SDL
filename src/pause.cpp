@@ -102,23 +102,28 @@ void pause() {
             break;
 
         case MUSIC_SLIDER_BOX:  // If touch music slider
-            MusicVolume = (MouseX - MusicSlider.getX()) / 128;
-            if (MouseX - MusicSlider.getX() < 0) MusicVolume = 0;
-            if (MouseX - MusicSlider.getX() > 255) MusicVolume = 2.;
-            
-            //Mix_VolumeMusic(MusicVolume);  // Setting volume of music
+            musicVolume = (MouseX - MusicSlider.getX());
+            if (MouseX - MusicSlider.getX() < 0) musicVolume = 0;
+            if (MouseX - MusicSlider.getX() > 255) musicVolume = 255;
+
+            // Setting volume of music
+            Mix_VolumeMusic(musicVolume/2);
             break;
 
         case EFFECT_SLIDER_BOX:  // If touch effects slider
-            EffectsVolume = (MouseX - SoundSlider.getX()) / 128;
-            if (MouseX - SoundSlider.getX() < 0) EffectsVolume = 0;
-            if (MouseX - SoundSlider.getX() > 255) EffectsVolume = 2.;
-            SDL_SetAudioDeviceGain(app.stream, EffectsVolume);
+            effectsVolume = (MouseX - SoundSlider.getX());
+            if (MouseX - SoundSlider.getX() < 0) effectsVolume = 0;
+            if (MouseX - SoundSlider.getX() > 255) effectsVolume = 255;
             
+            // Setting volumes of sounds
+            for (int i=0; i < SND_count; ++i) {
+                Mix_VolumeChunk(Sounds[i], effectsVolume/2);
+            }
+
             // Playing sound effect for understanding loud
-            if ( SDL_GetTicks() - prevSND > 200) {
-                Sounds[SND_laser].play();
-                prevSND = SDL_GetTicks();
+            if (SDL_GetTicks() > prevSND) {
+                Mix_PlayChannel(-1, Sounds[SND_laser], 0);
+                prevSND = SDL_GetTicks() + 300;
             }
             break;
 
@@ -141,8 +146,8 @@ void pause() {
         texts[TXT_PAUSE_MUSIC].draw();
         texts[TXT_PAUSE_SOUND].draw();
         // Drawing sliders
-        MusicSlider.blit(MusicVolume*128);
-        SoundSlider.blit(EffectsVolume*128);
+        MusicSlider.blit(musicVolume);
+        SoundSlider.blit(effectsVolume);
         // Drawing buttons
         esc.blit();
         BtnFlagUSA.blit();
@@ -165,7 +170,7 @@ void startMenu() {
     }
     
     if (advertisingMode) {
-        //Mix_PlayMusic( Musics[MUS_menu], -1);  // Infinite playing music
+        Mix_PlayMusic(Musics[MUS_menu], -1);  // Infinite playing music
     }
 
     // HUD
@@ -197,7 +202,7 @@ void startMenu() {
                 running = false;  // Exit from program
                 waiting = false;
                 break;
-            
+
             case SDL_EVENT_KEY_DOWN:
                 if (event.key.key == SDLK_ESCAPE) {
                     pause();  // Going to pause menu by escape button
@@ -206,7 +211,7 @@ void startMenu() {
                     waiting = false;
                 }
                 break;
-            
+
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
                 float MouseX, MouseY;
                 SDL_GetMouseState(&MouseX, &MouseY);  // Getting mouse position
@@ -220,7 +225,9 @@ void startMenu() {
         texts[TXT_MENU_SHMUP].draw();
         texts[TXT_MENU_KEYS].draw();
         texts[TXT_MENU_START].draw();
-        if (score != 0) {  // Drawing game and max score, if necesary
+        
+        // Drawing game and max score, if necesary
+        if (score != 0) {
             texts[TXT_MENU_SCORE].draw();
             texts[TXT_MENU_HIGH_SCORE].draw();
         }
@@ -231,7 +238,7 @@ void startMenu() {
         }
         SDL_RenderPresent(app.renderer);
 
-        SDL_Delay( 1000/drawFPS);    // Delaying constant time between ticks to decrease CPU loading
+        SDL_Delay(1000/drawFPS);    // Delaying constant time between ticks to decrease CPU loading
     }
     // Clearing animations
     if (advertisingMode) {
@@ -242,7 +249,7 @@ void startMenu() {
     player.reset();
     player.lives = MAX_LIVES; 
     player.shield = MAX_SHIELD;
-    MobArray.resize( START_NUM_ASTEROID);
+    MobArray.resize(START_NUM_ASTEROID);
     for(int i=0; i< MobArray.size(); ++i) {
         MobArray[i].reset();
     }
@@ -251,6 +258,6 @@ void startMenu() {
     game_over = false;
     score = 0;
     if (advertisingMode) {
-        //Mix_PlayMusic( Musics[MUS_main], -1);  // Infinite playing music
+        Mix_PlayMusic(Musics[MUS_main], -1);  // Infinite playing music
     }
 }

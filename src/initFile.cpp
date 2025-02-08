@@ -9,8 +9,8 @@ void loadInitFile() {
     std::string line;  // Output string line
 
     language = STANDART_LNG;
-    MusicVolume = 1;
-    EffectsVolume = 1;
+    musicVolume = MIX_MAX_VOLUME;
+    effectsVolume = MIX_MAX_VOLUME;
     MaxScore = 0;
     drawFPS = BASE_FPS;
     advertisingMode = true;
@@ -28,10 +28,10 @@ void loadInitFile() {
             }
         }
         else if ( first == "music") {
-            MusicVolume = std::stof(line.substr(line.rfind(' ') + 1))/100;
+            musicVolume = std::stof(line.substr(line.rfind(' ') + 1))*MIX_MAX_VOLUME/100;
         }
         else if ( first == "effects") {
-            EffectsVolume = std::stof(line.substr(line.rfind(' ') + 1))/100;
+            effectsVolume = std::stof(line.substr(line.rfind(' ') + 1))*MIX_MAX_VOLUME/100;
         }
         else if ( first == "maxScore") {
             MaxScore = std::stoi( line.substr(line.rfind(' ') + 1));
@@ -58,8 +58,11 @@ void setInitData() {
         setRussianText();
         break;
     }
-    // Setting volumes of sounds
-    SDL_SetAudioDeviceGain(app.stream, EffectsVolume);
+    // Setting volumes of audio
+    for (int i=0; i < SND_count; ++i) {
+        Mix_VolumeChunk(Sounds[i], effectsVolume/2);
+    }
+    Mix_VolumeMusic(musicVolume/2);
 }
 
 // Saving initialasing file
@@ -78,8 +81,8 @@ void saveInitFile() {
         setting << "language = russian" << std::endl;
         break;
     }
-    setting << "music = " << std::to_string((int)SDL_roundf(MusicVolume*100.)) << std::endl;  // Writing music volume
-    setting << "effects = " << std::to_string((int)SDL_roundf(EffectsVolume*100.)) << std::endl;  // Writing effects volume
+    setting << "music = " << std::to_string((int)SDL_roundf(musicVolume*100/MIX_MAX_VOLUME)) << std::endl;  // Writing music volume
+    setting << "effects = " << std::to_string((int)SDL_roundf(effectsVolume*100/MIX_MAX_VOLUME)) << std::endl;  // Writing effects volume
     setting << "maxScore = " << std::to_string(MaxScore) << std::endl;  // Writing max getting score
     setting << "FPS = " << std::to_string(drawFPS) << std::endl;  // Writing frames per seconds
     setting << "advertising = " << std::to_string(advertisingMode);  // Writing state

@@ -1,5 +1,5 @@
 # Game "Astroshooter"
-[![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/kolyaka32/Astroshuter-on-SDL/blob/main/README-ru.md)
+[![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/kolyaka32/Astroshuter-on-SDL/blob/master/README-ru.md)
 
 This repository contains sources files for shot-em-up game "Astroshooter", I made based on c++ using SDL3 libraries.
 
@@ -12,8 +12,8 @@ This repository contains sources files for shot-em-up game "Astroshooter", I mad
 
 ## Game
 After game launch you should shoot destroy and avoid asteroids.
-Also you can pick up power-ups for repairing ship or shoot double lasers.
 Only goal is to stay max time and get maximal score.
+Also you can pick up power-ups for repairing ship or shoot double lasers.
 Extra settings can found in file 'settings1.ini'
 
 
@@ -45,7 +45,7 @@ Extra settings can found in file 'settings1.ini'
 
 ## Instalation for own use (unux systems)
 1. Check availability of compilers[g++], [make] and [cmake];
-2. Check availability of [git]
+2. Check availability of [git];
 3. Install all necesery external libraries:
 4. External SDL libraries ([SDL3](https://github.com/libsdl-org/SDL/releases), [SDL3-image](https://github.com/libsdl-org/SDL_image/releases), [SDL3-mixer](https://github.com/libsdl-org/SDL_mixer/releases), [SDL3-ttf](https://github.com/libsdl-org/SDL_ttf/releases));
 5. External archieve library - libzip (build by you own), required: [libzip](https://libzip.org/download/);

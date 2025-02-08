@@ -1,5 +1,5 @@
 # Игра "Астрошутер"
-[![en](https://img.shields.io/badge/lang-en-green.svg)](https://github.com/kolyaka32/Astroshuter-on-SDL/blob/main/README.md)
+[![en](https://img.shields.io/badge/lang-en-green.svg)](https://github.com/kolyaka32/Astroshuter-on-SDL/blob/master/README.md)
 
 Этот репозиторий содержит файлы для сборки игры в жанре 'shoot-em-up' 'Астрошутер', написанной на c++ используя библитеки SDL3
 
@@ -11,10 +11,10 @@
 
 
 ## Game
-After game launch you should shoot destroy and avoid asteroids.
-Also you can pick up power-ups for repairing ship or shoot double lasers.
-Only goal is to stay max time and get maximal score.
-Extra settings can found in file 'settings1.ini'
+После запуска игры вы можете уничтожать и уклоняться от астероидов.
+Единственная цель - прожить как можно дольше и получить максимальный счёт.
+Для дополнительного интереса вы можете собирать бонусы и улучшения.
+Дополнительные настройки могут быть изменены в файле 'settings1.ini'
 
 
 ## Поддерживаемые языки
@@ -45,7 +45,7 @@ Extra settings can found in file 'settings1.ini'
 
 ## Установка для собственного использования (unux системы)
 1. Проверить наличие компиляторов [g++], [make] и [cmake];
-2. Проверить наличие [git]
+2. Проверить наличие [git];
 3. Установить (или собрать самому) следующие библиотеки:
 4. Внешние SDL библиотеки ([SDL3](https://github.com/libsdl-org/SDL/releases), [SDL3-image](https://github.com/libsdl-org/SDL_image/releases), [SDL3-mixer](https://github.com/libsdl-org/SDL_mixer/releases), [SDL3-ttf](https://github.com/libsdl-org/SDL_ttf/releases));
 5. Внешняя библиотека архивации (собирается самостоятельно): [libzip](https://libzip.org/download/);

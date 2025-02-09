@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 14)
 project(Astroshooter)
 
 # Hidding console
-set(CMAKE_CXX_FLAGS "-mwindows")
+set(CMAKE_CXX_FLAGS "-mwindows -static")
 
 # Setting prefix path for finding library
 set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")

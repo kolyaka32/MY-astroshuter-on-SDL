@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2024-2025, Kazankov Nikolay 
+ * <nik.kazankov.05@mail.ru>
+ */
+
 #pragma once
 
 #include "include.hpp"
@@ -18,7 +23,7 @@ void unloadData();
 #define FNT_count 1  // Number of fonts for better count
 
 // Names of images in array to using
-enum IMG_names{
+enum IMG_names {
     // Interface
     IMG_background,  // Background image
     IMG_esc_button,

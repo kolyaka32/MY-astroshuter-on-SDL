@@ -1,17 +1,22 @@
-// Base in-game global structs
+/*
+ * Copyright (C) 2024-2025, Kazankov Nikolay 
+ * <nik.kazankov.05@mail.ru>
+ */
+
 #pragma once
 
 #include "include.hpp"
 #include "dataLoader.hpp"
 #include "entity.hpp"
 
-struct App{
+// Base in-game global structs
+struct App {
     SDL_Renderer *renderer;
     SDL_Window *window;
     SDL_AudioDeviceID stream;
 };
 
-struct Sound{
+struct Sound {
     Uint8 *wav_data;
     Uint32 wav_data_len;
     SDL_AudioStream *stream;

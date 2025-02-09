@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2024-2025, Kazankov Nikolay 
+ * <nik.kazankov.05@mail.ru>
+ */
+
 #include "include.hpp"
 #include "define.hpp"
 #include "structs.hpp"
@@ -8,13 +13,13 @@
 TTF_Font* createFont(float size) {
     SDL_IOStream* tempRW = SDL_IOFromConstMem(fontMemory, fontSize);
     return TTF_OpenFontIO(tempRW, true, size);
-};
+}
 
 // Class of static text
 void staticText::clear() {
     SDL_DestroyTexture(texture);
     TTF_CloseFont(font);
-};
+}
 
 void staticText::set(const std::string& text, int size, ALIGNMENT_types alignment, int x, int y, SDL_Color color) {
     font = createFont(size);
@@ -24,11 +29,11 @@ void staticText::set(const std::string& text, int size, ALIGNMENT_types alignmen
     SDL_GetTextureSize(texture, &rect.w, &rect.h);
     rect.x = x - rect.w * alignment/2;
     rect.y = y;
-};
+}
 
 void staticText::draw() {
     SDL_RenderTexture(app.renderer, texture, NULL, &rect);
-};
+}
 
 
 // Class of drawing dinamic text at screen
@@ -53,7 +58,7 @@ void dinamicText::draw(const std::string& _text, ALIGNMENT_types alignment, SDL_
     SDL_GetTextureSize(texture, &rect.w, &rect.h);
     rect.x = x - rect.w * alignment/2;
     SDL_RenderTexture(app.renderer, texture, NULL, &rect);
-};
+}
 
 // Slider class
 Slider::Slider(int y) {
@@ -64,22 +69,22 @@ Slider::Slider(int y) {
     rectLine.x = SCREEN_WIDTH/2-rectLine.w/2; 
     rectLine.y = y - rectLine.h/2; 
     rectButton.y = y - rectButton.h/2;
-};
+}
 
 void Slider::blit(int state) {
     rectButton.x = rectLine.x + state - rectButton.w/2;
     SDL_RenderTexture(app.renderer, textureLine, NULL, &rectLine);
     SDL_RenderTexture(app.renderer, textureButton, NULL, &rectButton);
-};
+}
 
 bool Slider::in(float x, float y) {
     return ((x > rectLine.x && x < rectLine.x + rectLine.w) &&
         (y > rectLine.y && y < rectLine.y + rectLine.h));
-};
+}
 
 int Slider::getX() {
     return rectLine.x;
-};
+}
 
 // Button class
 Button::Button(int x, int y, IMG_names textureIndex) {
@@ -87,16 +92,16 @@ Button::Button(int x, int y, IMG_names textureIndex) {
     SDL_GetTextureSize(texture, &rect.w, &rect.h);
     rect.x = x - rect.w/2; 
     rect.y = y - rect.h/2;
-};
+}
 
 void Button::blit() {
     SDL_RenderTexture(app.renderer, texture, NULL, &rect);
-};
+}
 
 bool Button::in(float x, float y) {
     return ((x > rect.x && x < rect.x + rect.w) &&
         (y > rect.y && y < rect.y + rect.h));
-};
+}
 
 
 // GIF animation play
@@ -105,7 +110,7 @@ Animation::Animation( SDL_FRect _dest, ANI_names _type)
     // Resetting frames
     frame = 0;
     prevTick = 0;
-};
+}
 
 void Animation::blit() {
     if (SDL_GetTicks() > prevTick) {
@@ -115,11 +120,11 @@ void Animation::blit() {
         prevTick = SDL_GetTicks() + Animations[type]->delays[frame] / 2;
     }
     SDL_RenderTexture(app.renderer, texture, NULL, &dest);
-};
+}
 
 void Animation::clear() {
     SDL_DestroyTexture(texture);
-};
+}
 
 
 // Bar class

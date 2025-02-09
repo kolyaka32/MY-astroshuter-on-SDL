@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2024-2025, Kazankov Nikolay 
+ * <nik.kazankov.05@mail.ru>
+ */
+
 #include "include.hpp"
 #include "structs.hpp"
 #include "dataLoader.hpp"
@@ -6,13 +11,13 @@
 // Base destination of drawing
 void Entity::blit() {
     SDL_RenderTexture(app.renderer, texture, NULL, &dest); 
-};
+}
 
 // Base update and moving function
 void Entity::update() {
     dest.x += speedx; 
     dest.y += speedy;
-};
+}
 
 
 // Head class
@@ -32,22 +37,22 @@ void Head::reset() {
     // Resseting ticks
     lastShootTicks = 0;
     lastBoostTicks = 0;
-};
+}
 
 // Try move left
 void Head::moveLeft() {
     if (dx > -MOVE_SPEED) dx -= MOVE_SPEED;
-};
+}
 
 // Try move right
 void Head::moveRight() {
     if (dx < MOVE_SPEED) dx += MOVE_SPEED;
-};
+}
 
 // Try stopping movement
 void Head::stop() {
     dx = 0;
-};
+}
 
 // Try shoot bullet
 void Head::tryShoot() {
@@ -65,7 +70,7 @@ void Head::tryShoot() {
         }
         Mix_PlayChannel(-1, Sounds[SND_laser], 0);
     }
-};
+}
 
 // Update position and animation frame
 void Head::update() {
@@ -104,7 +109,7 @@ void Head::update() {
             lastShootTicks++;
         }
     }
-};
+}
 
 // Function of drawing lives at screen
 void Head::blitLives() {
@@ -112,7 +117,7 @@ void Head::blitLives() {
         SDL_FRect dest = { (float)(SCREEN_WIDTH-160+40*i), 5., 36., 27.};
         SDL_RenderTexture(app.renderer, Textures[IMG_player], NULL, &dest); 
     }
-};
+}
 
 // Set explosion animation
 void Head::setAnimation() {
@@ -125,7 +130,7 @@ void Head::setAnimation() {
 // Checking if the animation in progress
 bool Head::isAnimation() {
     return (frame == 0);
-};
+}
 
 
 // Bullet class
@@ -137,12 +142,12 @@ Bullet::Bullet(int PosX, int PosY) {
     dest.y = PosY;
     texture = Textures[IMG_laser];
     SDL_GetTextureSize(texture, &dest.w, &dest.h);
-};
+}
 
 // Checking if get over screen
 bool Bullet::isOver() {
     return dest.y < 0;
-};
+}
 
 
 // Mob class
@@ -157,7 +162,7 @@ void Mob::reset() {
     rot = (rand() % 20)/10;
     dRot = (float)(rand() % 16)/10 - 8;
     frame = 0;
-};
+}
 
 // Update position and animation frame
 void Mob::update() {
@@ -182,17 +187,17 @@ void Mob::update() {
         dest.y += speedy;
         rot += dRot;
     }
-};
+}
 
 // Checking if get over screen
 bool Mob::isOver() {
     return (dest.y - dest.h > GAME_HEIGHT) || (dest.x > SCREEN_WIDTH) || (dest.x+dest.w < 0);
-};
+}
 
 // Function of drawing at screen
 void Mob::blit() {
     SDL_RenderTextureRotated( app.renderer, texture, NULL, &dest, rot, NULL, SDL_FLIP_NONE);
-};
+}
 
 // Set explosion animation
 void Mob::setAnimation() {
@@ -202,12 +207,12 @@ void Mob::setAnimation() {
     SDL_GetTextureSize(texture, &dest.w, &dest.h);
     dest.w/=2;
     dest.h/=2;
-};
+}
 
 // Checking if the animation in progress
 bool Mob::isAnimation() {
     return (frame == 0);
-};
+}
 
 
 // Powerup class
@@ -223,7 +228,7 @@ Pow::Pow(SDL_FRect position) {
     SDL_GetTextureSize(texture, &dest.w, &dest.h);
     dest.x -= dest.w/2;
     dest.y -= dest.h/2;
-};
+}
 
 // Activate ability of current powerup
 void Pow::activate() {
@@ -243,9 +248,9 @@ void Pow::activate() {
         break;
 
     }
-};
+}
 
 // Checking if get over screen
 bool Pow::isOver() {
     return dest.y > GAME_HEIGHT;
-};
+}

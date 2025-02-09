@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2024-2025, Kazankov Nikolay 
+ * <nik.kazankov.05@mail.ru>
+ */
+
 #pragma once
 
 #include "include.hpp"
@@ -15,8 +20,7 @@ enum ALIGNMENT_types{
 TTF_Font* createFont(float size);
 
 // Static text on screen with drawing functions
-class staticText
-{
+class staticText {
 private:
     TTF_Font* font = nullptr;
     SDL_Texture *texture = nullptr;
@@ -28,8 +32,7 @@ public:
 };
 
 // Class of drawing dinamic text at screen
-class dinamicText
-{
+class dinamicText {
 private:
     TTF_Font* font = nullptr;
     SDL_Texture *texture = nullptr;
@@ -42,7 +45,7 @@ public:
 };
 
 // Class of HUD slider for better choosen parameters
-class Slider{
+class Slider {
 private:
     SDL_Texture *textureLine = nullptr;
     SDL_Texture *textureButton = nullptr;
@@ -55,8 +58,7 @@ public:
     int getX();
 };
 
-class Button
-{
+class Button {
 private:
     SDL_Texture *texture;
     SDL_FRect rect;
@@ -66,8 +68,7 @@ public:
     bool in(float x, float y);
 };
 
-class Animation
-{
+class Animation {
 private:
     const Uint8 type;
     SDL_Texture* texture = nullptr;
@@ -80,8 +81,7 @@ public:
     void clear();
 };
 
-class Bar
-{
+class Bar {
 private:
     SDL_FRect rectBack;
     SDL_FRect rectFront;

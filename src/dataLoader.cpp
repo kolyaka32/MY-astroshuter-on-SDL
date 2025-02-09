@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2024-2025, Kazankov Nikolay 
+ * <nik.kazankov.05@mail.ru>
+ */
+
 #include "include.hpp"
 #include "define.hpp"
 #include "structs.hpp"
@@ -27,7 +32,7 @@ zip_t* openarchive(const char* archiveName) {
 
     // Returning archive for checking correction
     return archive;
-};
+}
 
 // Function of getting data of archive file
 static inline SDL_IOStream* dataFromarchive(const char* name) {
@@ -50,7 +55,7 @@ static inline SDL_IOStream* dataFromarchive(const char* name) {
 
     // Returning created data structure
     return tempRW;
-};
+}
 
 // Functions of loading objects
 // Function of loading game icone
@@ -67,7 +72,7 @@ static unsigned loadIcone(const char* name) {
     SDL_SetWindowIcon(app.window, iconeImage);
     SDL_DestroySurface(iconeImage);
     return ICO_count;  // Returning correction of loading
-};
+}
 
 // Functions of loading selected image file
 static void loadPicture(const char* name, IMG_names number) {
@@ -79,8 +84,8 @@ static void loadPicture(const char* name, IMG_names number) {
     // Checking correction of loaded file
     if (Textures[number] != NULL) {
         loadedImages++;
-    };
-};
+    }
+}
 
 // Function of loading selected GIF animation
 static void loadAnimation(const char* name, ANI_names number) {
@@ -93,8 +98,8 @@ static void loadAnimation(const char* name, ANI_names number) {
     // Checking correction of loaded file
     if (Animations[number] != NULL) {
         loadedAnimations++;
-    };
-};
+    }
+}
 
 // Function of loading selected music file
 static void loadMusic(const char* name, MUS_names number) {
@@ -106,8 +111,8 @@ static void loadMusic(const char* name, MUS_names number) {
     // Checking correction of loaded file
     if (Musics[number] != NULL) {
         loadedMusics++;
-    };
-};
+    }
+}
 
 // Function of loading selected sound
 static void loadSound(const char* name, SND_names number) {
@@ -119,8 +124,8 @@ static void loadSound(const char* name, SND_names number) {
     // Checking correction of loaded file
     if(Sounds[number] != NULL){
         loadedSounds++;
-    };
-};
+    }
+}
 
 // Function of loading font
 static unsigned loadFont(const char* name) {
@@ -142,7 +147,7 @@ static unsigned loadFont(const char* name) {
 
     // Checking correction
     return FNT_count;
-};
+}
 
 // Functions of loading objects from lists
 // Loading all images
@@ -188,7 +193,7 @@ static unsigned loadAllImages() {
 
     // Returning numbers of loaded files
     return loadedImages;
-};
+}
 
 // Loading all animations
 static unsigned loadAllAnimations() {
@@ -199,7 +204,7 @@ static unsigned loadAllAnimations() {
 
     // Returning numbers of loaded files
     return loadedAnimations;
-};
+}
 
 // Loading all music tracks
 static unsigned loadAllMusic() {
@@ -210,7 +215,7 @@ static unsigned loadAllMusic() {
 
     // Returning numbers of loaded files
     return loadedMusics;
-};
+}
 
 // Loading all sounds
 static unsigned loadAllSounds() {
@@ -225,7 +230,7 @@ static unsigned loadAllSounds() {
 
     // Returning numbers of loaded files
     return loadedSounds;
-};
+}
 
 void loadData(const char* fileName) {
     // Opening archive
@@ -288,4 +293,4 @@ void unloadData() {
         SDL_DestroyTexture(Textures[i]);
         Textures[i] = NULL;
     }
-};
+}

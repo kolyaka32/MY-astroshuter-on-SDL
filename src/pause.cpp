@@ -1,4 +1,9 @@
-#include "include.hpp"
+/*
+ * Copyright (C) 2024-2025, Kazankov Nikolay 
+ * <nik.kazankov.05@mail.ru>
+ */
+
+ #include "include.hpp"
 #include "define.hpp"
 #include "pause.hpp"
 
@@ -22,7 +27,7 @@ void setEnglishText() {
     texts[TXT_MENU_SCORE].set("Your last score: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
     texts[TXT_MENU_HIGH_SCORE].set("Your max score: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
     SDL_SetWindowTitle(app.window, "Astroshooter on SDL");
-};
+}
 
 void setRussianText() {
     texts[TXT_MENU_SHMUP].set("ШМАП!", 64, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT/5);
@@ -34,7 +39,7 @@ void setRussianText() {
     texts[TXT_MENU_SCORE].set("Ваш последний счёт: " + std::to_string(score), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5);
     texts[TXT_MENU_HIGH_SCORE].set("Ваш максимальный счёт: " + std::to_string(MaxScore), 20, MIDLE_text, SCREEN_WIDTH/2, GAME_HEIGHT*3/5+24);
     SDL_SetWindowTitle(app.window, "Астрошутер на SDL");
-};
+}
 
 // Pause menu
 void pause() {
@@ -159,7 +164,7 @@ void pause() {
         SDL_RenderPresent(app.renderer);  // Blitting textures on screen
         SDL_Delay(1000 / drawFPS);  // Delaying time to decrease CPU loading
     }
-};
+}
 
 void startMenu() {
     // Clearing all unnecesary information

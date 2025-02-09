@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2024-2025, Kazankov Nikolay 
+ * <nik.kazankov.05@mail.ru>
+ */
+
 #pragma once
 
 #include "include.hpp"
@@ -37,7 +42,7 @@ public:
 
 
 // Bullet class
-class Bullet:public Entity {
+class Bullet : public Entity {
 public:
     Bullet(int PosX, int PosY);  // Setting new bullet at need position
     bool isOver();               // Checking if get over screen
@@ -60,7 +65,7 @@ public:
 
 
 // Power-up (boosters) class
-class Pow:public Entity {
+class Pow : public Entity {
 private:
     Uint8 type;              // Type of current powerup (from POW_types)
 public:

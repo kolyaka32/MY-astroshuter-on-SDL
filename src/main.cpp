@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2024-2025, Kazankov Nikolay 
+ * <nik.kazankov.05@mail.ru>
+ */
 
 #include "include.hpp"
 #include "define.hpp"
@@ -10,9 +14,8 @@
 #include "initFile.hpp"
 #include "entity.hpp"
 
-#include "SDL3/SDL_main.h"
-
-App app;  // Creating main varables
+// Creating main struct with data for work
+App app;
 
 // Data for creating fonts
 Uint8* fontMemory;    // Memory with font data
@@ -270,7 +273,7 @@ int main(int argv, char** args) {
 
             // Getting last update time
             drawTime = SDL_GetTicks() + 1000/drawFPS;
-        };
+        }
 
         // Waiting until next moving or drawing
         Sint64 MoveSleep = (moveTime - SDL_GetTicks());
